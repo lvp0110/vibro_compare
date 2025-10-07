@@ -6,25 +6,6 @@ import VibroChartNew from "../components/charts/VibroChartNew";
 const getThicknessUrl = (modelId) =>
   `http://localhost:3005/vibro/models/${encodeURIComponent(modelId)}/sizes`;
 
-// Normalize API response to array of scalar values (numbers/strings)
-const normalizeThickness = (payload) => {
-  const base = Array.isArray(payload?.data)
-    ? payload.data
-    : Array.isArray(payload)
-    ? payload
-    : Array.isArray(payload?.items)
-    ? payload.items
-    : [];
-  return base
-    .map((v) => {
-      if (v == null) return undefined;
-      if (typeof v === "number" || typeof v === "string") return v;
-      // Try common keys
-      return v.thickness ?? v.Thickness ?? v.value ?? v.t ?? v.mm ?? undefined;
-    })
-    .filter((v) => v !== undefined && v !== null);
-};
-
 export default function Vibro() {
   const [items, setItems] = useState([]);
   const [valueA, setValueA] = useState("");
@@ -68,10 +49,19 @@ export default function Vibro() {
     if (valueA && valueB && thicknessA && thicknessB) {
       (async () => {
         try {
-          const res = await fetch(
-            `http://localhost:3005/vibro/${valueA}/vs/${valueB}`,
-            { method: "POST" }
-          );
+          const res = await fetch(`http://localhost:3005/vibro/graph`, {
+            method: "POST",
+            body: JSON.stringify([
+              {
+                model_code: valueA,
+                size_code: thicknessA,
+              },
+              {
+                model_code: valueB,
+                size_code: thicknessB,
+              },
+            ]),
+          });
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
 
@@ -85,8 +75,12 @@ export default function Vibro() {
     if (valueA && thicknessA) {
       (async () => {
         try {
+          const thickness = thicknessAOptions.find(
+            (item) => item.code === thicknessA
+          )?.thickness;
+
           const res = await fetch(
-            `http://localhost:3005/vibro/material/model/${valueA}?thick=${thicknessA}`
+            `http://localhost:3005/vibro/material/model/${valueA}/thickness/${thickness}`
           );
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
@@ -95,14 +89,18 @@ export default function Vibro() {
         } catch (e) {}
       })();
     }
-  }, [valueA, thicknessA]);
+  }, [valueA, thicknessA, thicknessAOptions]);
 
   useEffect(() => {
     if (valueB && thicknessB) {
       (async () => {
+        const thickness = thicknessBOptions.find(
+          (item) => item.code === thicknessB
+        )?.thickness;
+
         try {
           const res = await fetch(
-            `http://localhost:3005/vibro/material/model/${valueB}?thick=${thicknessB}`
+            `http://localhost:3005/vibro/material/model/${valueB}/thickness/${thickness}`
           );
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
@@ -111,7 +109,7 @@ export default function Vibro() {
         } catch (e) {}
       })();
     }
-  }, [valueB, thicknessB]);
+  }, [valueB, thicknessB, thicknessBOptions]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -340,11 +338,8 @@ export default function Vibro() {
               >
                 <option value="">Толщина материала...</option>
                 {thicknessAOptions?.map((thickness) => (
-                  <option
-                    key={`${thickness.len_y}_${thickness.len_x}_${thickness.len_z}`}
-                    value={thickness.len_y}
-                  >
-                    {thickness.len_x} {thickness.len_z} {thickness.len_y}
+                  <option key={thickness.code} value={thickness.code}>
+                    {thickness.length} {thickness.width} {thickness.thickness}
                   </option>
                 ))}
               </select>
@@ -362,11 +357,8 @@ export default function Vibro() {
               >
                 <option value="">Толщина материала...</option>
                 {thicknessBOptions?.map((thickness) => (
-                  <option
-                    key={`${thickness.len_y}_${thickness.len_x}_${thickness.len_z}`}
-                    value={thickness.len_y}
-                  >
-                    {thickness.len_x} {thickness.len_z} {thickness.len_y}
+                  <option key={thickness.code} value={thickness.code}>
+                    {thickness.length} {thickness.width} {thickness.thickness}
                   </option>
                 ))}
               </select>
@@ -380,7 +372,7 @@ export default function Vibro() {
             <div>{infoB}</div>
           </div>
 
-          {chartData && <VibroChartNew chartData={chartData.measurements} />}
+          {chartData && <VibroChartNew chartData={chartData} />}
 
           {isComparable && (
             <div style={{ marginTop: 16 }}>

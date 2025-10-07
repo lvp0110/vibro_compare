@@ -11,9 +11,6 @@ import {
 } from "recharts";
 import { useMemo } from "react";
 
-// Фиксированные тики по оси Y
-export const Y_TICKS = [0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.1];
-
 export default function VibroChartNew({
   chartData,
   height = 300,
@@ -49,8 +46,8 @@ export default function VibroChartNew({
 
           {/* Фиксированный домен и тики по Y */}
           <YAxis
-            domain={[Y_TICKS[0], Y_TICKS[Y_TICKS.length - 1]]}
-            ticks={Y_TICKS}
+            // domain={[Y_TICKS[0], Y_TICKS[Y_TICKS.length - 1]]}
+            ticks={chartData.diagram_params.y_axis_points}
             tick={{ fontSize: 12 }}
           />
 
