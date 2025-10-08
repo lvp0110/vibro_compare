@@ -8,6 +8,11 @@ const getThicknessUrl = (modelId) =>
   `http://localhost:3005/vibro/models/${encodeURIComponent(modelId)}/sizes`;
 
 export default function Vibro() {
+  const [brands, setBrands] = useState([]);
+
+  const [brandA, setBrandA] = useState(null);
+  const [brandB, setBrandB] = useState(null);
+
   const [items, setItems] = useState([]);
   const [valueA, setValueA] = useState("");
   const [valueB, setValueB] = useState("");
@@ -32,19 +37,60 @@ export default function Vibro() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch("http://localhost:3005/vibro/models/sylomer_", {
+        const res = await fetch("http://localhost:3005/vibro/brands", {
           headers: { Accept: "application/json" },
         });
 
         const response = await res.json();
 
-        setListA(response.data);
-        setListB(response.data);
+        setBrands(response.data);
       } catch {}
     }
 
     load();
   }, []);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch(
+          `http://localhost:3005/vibro/models/${brandA}`,
+          {
+            headers: { Accept: "application/json" },
+          }
+        );
+
+        const response = await res.json();
+
+        setListA(response.data);
+      } catch {}
+    }
+
+    if (brandA) {
+      load();
+    }
+  }, [brandA]);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch(
+          `http://localhost:3005/vibro/models/${brandB}`,
+          {
+            headers: { Accept: "application/json" },
+          }
+        );
+
+        const response = await res.json();
+
+        setListB(response.data);
+      } catch {}
+    }
+
+    if (brandB) {
+      load();
+    }
+  }, [brandB]);
 
   useEffect(() => {
     if (valueA && valueB && thicknessA && thicknessB) {
@@ -155,27 +201,6 @@ export default function Vibro() {
     () => items.find((it) => it?.Name === valueB),
     [items, valueB]
   );
-  useEffect(() => {
-    async function load() {
-      try {
-        const res = await fetch("http://localhost:3005/vibro/models/sylomer_", {
-          headers: { Accept: "application/json" },
-        });
-
-        const response = await res.json();
-
-        const data = Array.isArray(response?.data) ? response.data : [];
-        const sylomerOnly = data.filter((it) => {
-          const name = (it?.name ?? it?.Name ?? "").toString();
-          return name.toLowerCase().includes("sylomer");
-        });
-
-        setList(sylomerOnly);
-      } catch {}
-    }
-
-    load();
-  }, []);
 
   useEffect(() => {
     (async () => {
@@ -284,8 +309,8 @@ export default function Vibro() {
           >
             <label>
               <select
-                value={valueA}
-                onChange={(e) => setValueA(e.target.value)}
+                value={brandA}
+                onChange={(e) => setBrandA(e.target.value)}
                 style={{
                   display: "block",
                   marginTop: 8,
@@ -294,7 +319,7 @@ export default function Vibro() {
                 }}
               >
                 <option value="">Выберите бренд...</option>
-                {listA?.map((item) => (
+                {brands?.map((item) => (
                   <option key={item.Code} value={item.Code}>
                     {item.Name}
                   </option>
@@ -304,8 +329,8 @@ export default function Vibro() {
 
             <label>
               <select
-                value={valueB}
-                onChange={(e) => setValueB(e.target.value)}
+                value={brandB}
+                onChange={(e) => setBrandB(e.target.value)}
                 style={{
                   display: "block",
                   marginTop: 8,
@@ -314,7 +339,7 @@ export default function Vibro() {
                 }}
               >
                 <option value="">Выберите бренд...</option>
-                {listB?.map((item) => (
+                {brands?.map((item) => (
                   <option key={item.Code} value={item.Code}>
                     {item.Name}
                   </option>
