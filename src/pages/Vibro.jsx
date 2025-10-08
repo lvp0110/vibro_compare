@@ -252,9 +252,9 @@ export default function Vibro() {
   }, [itemA, itemB, ignoredKeys]);
 
   const isComparable = !!itemA && !!itemB;
-  const isEqual = isComparable && diffs.length === 0;
-  const labelA = useMemo(() => itemA?.Name || "Материал A", [itemA]);
-  const labelB = useMemo(() => itemB?.Name || "Материал B", [itemB]);
+  // const isEqual = isComparable && diffs.length === 0;
+  const labelA = useMemo(() => itemA?.Name || valueA || "-", [itemA]);
+  const labelB = useMemo(() => itemB?.Name || valueB || "-", [itemB]);
 
   // Подписи X (опционально): например, уровни нагрузки 1..8
   const xLabels = useMemo(() => Array.from({ length: 8 }, (_, i) => i + 1), []);
@@ -271,13 +271,56 @@ export default function Vibro() {
           </h2>
           <div style={{ marginTop: 8, textAlign: "center" }}>
             <strong>
-              {labelA} vs {labelB}:
+              {labelA} VS {labelB}
             </strong>{" "}
-            <span style={{ color: isEqual ? "green" : "orange" }}>
+            {/* <span style={{ color: isEqual ? "green" : "orange" }}>
               {isEqual ? "совпадают" : "разные"}
-            </span>
+            </span> */}
           </div>
 
+          <div
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
+          >
+            <label>
+              <select
+                value={valueA}
+                onChange={(e) => setValueA(e.target.value)}
+                style={{
+                  display: "block",
+                  marginTop: 8,
+                  padding: 8,
+                  width: "100%",
+                }}
+              >
+                <option value="">Выберите бренд...</option>
+                {listA?.map((item) => (
+                  <option key={item.Code} value={item.Code}>
+                    {item.Name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label>
+              <select
+                value={valueB}
+                onChange={(e) => setValueB(e.target.value)}
+                style={{
+                  display: "block",
+                  marginTop: 8,
+                  padding: 8,
+                  width: "100%",
+                }}
+              >
+                <option value="">Выберите бренд...</option>
+                {listB?.map((item) => (
+                  <option key={item.Code} value={item.Code}>
+                    {item.Name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
           <div
             style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
           >
