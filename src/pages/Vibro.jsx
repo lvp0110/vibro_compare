@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import VibroChart, { FREQUENCIES } from "../components/charts/VibroChart";
 import VibroChartNew from "../components/charts/VibroChartNew";
+import Markdown from "react-markdown";
 
 // Helper: thickness endpoint for a model (adjust to match Swagger if needed)
 const getThicknessUrl = (modelId) =>
@@ -411,8 +412,12 @@ export default function Vibro() {
           <div
             style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
           >
-            <div>{infoA}</div>
-            <div>{infoB}</div>
+            <div>
+              <Markdown>{infoA}</Markdown>
+            </div>
+            <div>
+              <Markdown>{infoB}</Markdown>
+            </div>
           </div>
 
           {chartData && <VibroChartNew chartData={chartData} />}
