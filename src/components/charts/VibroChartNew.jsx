@@ -13,7 +13,7 @@ import { useMemo } from "react";
 
 export default function VibroChartNew({
   chartData,
-  height = 300,
+  height = 400,
   colors = { a: "#1976d2", b: "#e91e63" },
 }) {
   // Делаем категориальные подписи по X (равномерное распределение по экрану)

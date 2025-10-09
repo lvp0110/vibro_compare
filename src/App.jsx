@@ -55,8 +55,9 @@ export default function App() {
           borderTop: "1px solid #eee",
         }}
       >
+        <small>dBase© VibroCompare | </small>
         <small>
-          AN Game Card ©
+          
           {new Date()
             .toLocaleDateString("ru-RU", {
               day: "2-digit",
