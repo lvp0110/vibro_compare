@@ -10,8 +10,8 @@ const getThicknessUrl = (modelId) =>
 export default function Vibro() {
   const [brands, setBrands] = useState([]);
 
-  const [brandA, setBrandA] = useState(null);
-  const [brandB, setBrandB] = useState(null);
+  const [brandA, setBrandA] = useState("");
+  const [brandB, setBrandB] = useState("");
 
   const [items, setItems] = useState([]);
   const [valueA, setValueA] = useState("");
@@ -279,8 +279,17 @@ export default function Vibro() {
 
   const isComparable = !!itemA && !!itemB;
   // const isEqual = isComparable && diffs.length === 0;
-  const labelA = useMemo(() => itemA?.Name || valueA || "-", [itemA]);
-  const labelB = useMemo(() => itemB?.Name || valueB || "-", [itemB]);
+  const labelA = itemA?.Name || valueA || "-";
+  const labelB = itemB?.Name || valueB || "-";
+
+  const brandAName = brands.find((b) => b.Code === brandA)?.Name || "";
+  const brandBName = brands.find((b) => b.Code === brandB)?.Name || "";
+
+  const materialAName = listA.find((m) => m.Code === valueA)?.Name || "";
+  const materialBName = listB.find((m) => m.Code === valueB)?.Name || "";
+
+  const labelAFull = [brandAName, materialAName].filter(Boolean).join(" ");
+  const labelBFull = [brandBName, materialBName].filter(Boolean).join(" ");
 
   // Подписи X (опционально): например, уровни нагрузки 1..8
   const xLabels = useMemo(() => Array.from({ length: 8 }, (_, i) => i + 1), []);
@@ -297,7 +306,7 @@ export default function Vibro() {
           </h2>
           <div style={{ marginTop: 8, textAlign: "center" }}>
             <strong>
-              {labelA} VS {labelB}
+              {labelAFull || "-"} VS {labelBFull || "-"}
             </strong>{" "}
             {/* <span style={{ color: isEqual ? "green" : "orange" }}>
               {isEqual ? "совпадают" : "разные"}
@@ -408,7 +417,7 @@ export default function Vibro() {
                 <option value="">Толщина материала...</option>
                 {thicknessAOptions?.map((thickness) => (
                   <option key={thickness.code} value={thickness.code}>
-                    {thickness.length} {thickness.width} {thickness.thickness}
+                    {thickness.thickness}
                   </option>
                 ))}
               </select>
@@ -427,7 +436,7 @@ export default function Vibro() {
                 <option value="">Толщина материала...</option>
                 {thicknessBOptions?.map((thickness) => (
                   <option key={thickness.code} value={thickness.code}>
-                    {thickness.length} {thickness.width} {thickness.thickness}
+                    {thickness.thickness}
                   </option>
                 ))}
               </select>
