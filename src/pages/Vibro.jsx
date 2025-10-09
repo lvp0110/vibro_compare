@@ -1,30 +1,49 @@
 import { useEffect, useState, useMemo } from "react";
 import VibroChart, { FREQUENCIES } from "../components/charts/VibroChart";
 import VibroChartNew from "../components/charts/VibroChartNew";
+import Markdown from "react-markdown";
+
+// Helper: thickness endpoint for a model (adjust to match Swagger if needed)
+const getThicknessUrl = (modelId) =>
+  `http://localhost:3005/vibro/models/${encodeURIComponent(modelId)}/sizes`;
 
 export default function Vibro() {
+  const [brands, setBrands] = useState([]);
+
+  const [brandA, setBrandA] = useState("");
+  const [brandB, setBrandB] = useState("");
+
   const [items, setItems] = useState([]);
   const [valueA, setValueA] = useState("");
   const [valueB, setValueB] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [list, setList] = useState([]);
+  const [listA, setListA] = useState([]);
+  const [listB, setListB] = useState([]);
   const [chartData, setChartData] = useState(null);
 
   const seriesA = [0.12, 0.18, 0.33, 0.41, 0.55, 0.62, 0.74, 0.89, 1.03, 1.03];
   const seriesB = [0.1, 0.15, 0.28, 0.39, 0.5, 0.58, 0.7, 0.84, 0.98, 0.98];
 
+  // Thickness per selected model
+  const [thicknessAOptions, setThicknessAOptions] = useState([]);
+  const [thicknessBOptions, setThicknessBOptions] = useState([]);
+  const [thicknessA, setThicknessA] = useState("");
+  const [thicknessB, setThicknessB] = useState("");
+  const [infoA, setInfoA] = useState("");
+  const [infoB, setInfoB] = useState("");
+
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch("http://localhost:3005/vibro/list", {
+        const res = await fetch("http://localhost:3005/vibro/brands", {
           headers: { Accept: "application/json" },
         });
 
         const response = await res.json();
 
-        setList(response.data);
+        setBrands(response.data);
       } catch {}
     }
 
@@ -32,21 +51,112 @@ export default function Vibro() {
   }, []);
 
   useEffect(() => {
-    if (valueA && valueB) {
+    async function load() {
+      try {
+        const res = await fetch(
+          `http://localhost:3005/vibro/models/${brandA}`,
+          {
+            headers: { Accept: "application/json" },
+          }
+        );
+
+        const response = await res.json();
+
+        setListA(response.data);
+      } catch {}
+    }
+
+    if (brandA) {
+      load();
+    }
+  }, [brandA]);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch(
+          `http://localhost:3005/vibro/models/${brandB}`,
+          {
+            headers: { Accept: "application/json" },
+          }
+        );
+
+        const response = await res.json();
+
+        setListB(response.data);
+      } catch {}
+    }
+
+    if (brandB) {
+      load();
+    }
+  }, [brandB]);
+
+  useEffect(() => {
+    if (valueA && valueB && thicknessA && thicknessB) {
       (async () => {
         try {
-          const res = await fetch(
-            `http://localhost:3005/vibro/${valueA}/vs/${valueB}`,
-            { method: "POST" }
-          );
+          const res = await fetch(`http://localhost:3005/vibro/graph`, {
+            method: "POST",
+            body: JSON.stringify([
+              {
+                model_code: valueA,
+                size_code: thicknessA,
+              },
+              {
+                model_code: valueB,
+                size_code: thicknessB,
+              },
+            ]),
+          });
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
 
           setChartData(json.data);
+        } catch {}
+      })();
+    }
+  }, [valueA, valueB, thicknessA, thicknessB]);
+
+  useEffect(() => {
+    if (valueA && thicknessA) {
+      (async () => {
+        try {
+          const thickness = thicknessAOptions.find(
+            (item) => item.code === thicknessA
+          )?.thickness;
+
+          const res = await fetch(
+            `http://localhost:3005/vibro/material/model/${valueA}/thickness/${thickness}`
+          );
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const json = await res.json();
+
+          setInfoA(json.data);
         } catch (e) {}
       })();
     }
-  }, [valueA, valueB]);
+  }, [valueA, thicknessA, thicknessAOptions]);
+
+  useEffect(() => {
+    if (valueB && thicknessB) {
+      (async () => {
+        const thickness = thicknessBOptions.find(
+          (item) => item.code === thicknessB
+        )?.thickness;
+
+        try {
+          const res = await fetch(
+            `http://localhost:3005/vibro/material/model/${valueB}/thickness/${thickness}`
+          );
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const json = await res.json();
+
+          setInfoB(json.data);
+        } catch (e) {}
+      })();
+    }
+  }, [valueB, thicknessB, thicknessBOptions]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -91,28 +201,41 @@ export default function Vibro() {
     () => items.find((it) => it?.Name === valueB),
     [items, valueB]
   );
+
   useEffect(() => {
-    async function load() {
+    (async () => {
+      setThicknessA("");
+      setThicknessAOptions([]);
+      if (!valueA) return;
       try {
-        const res = await fetch("http://localhost:3005/vibro/list", {
+        const res = await fetch(getThicknessUrl(valueA), {
           headers: { Accept: "application/json" },
         });
-  
-        const response = await res.json();
-  
-        const data = Array.isArray(response?.data) ? response.data : [];
-        const sylomerOnly = data.filter((it) => {
-          const name = (it?.name ?? it?.Name ?? "").toString();
-          return name.toLowerCase().includes("sylomer");
-        });
-  
-        setList(sylomerOnly);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+
+        setThicknessAOptions(json.data);
       } catch {}
-    }
-  
-    load();
-  }, []);
-  
+    })();
+  }, [valueA]);
+
+  useEffect(() => {
+    (async () => {
+      setThicknessB("");
+      setThicknessBOptions([]);
+      if (!valueB) return;
+      try {
+        const res = await fetch(getThicknessUrl(valueB), {
+          headers: { Accept: "application/json" },
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+
+        setThicknessBOptions(json.data);
+      } catch {}
+    })();
+  }, [valueB]);
+
   const ignoredKeys = useMemo(() => new Set(["__typename"]), []);
 
   const isObject = (v) => v !== null && typeof v === "object";
@@ -155,9 +278,18 @@ export default function Vibro() {
   }, [itemA, itemB, ignoredKeys]);
 
   const isComparable = !!itemA && !!itemB;
-  const isEqual = isComparable && diffs.length === 0;
-  const labelA = useMemo(() => itemA?.Name || "Материал A", [itemA]);
-  const labelB = useMemo(() => itemB?.Name || "Материал B", [itemB]);
+  // const isEqual = isComparable && diffs.length === 0;
+  const labelA = itemA?.Name || valueA || "-";
+  const labelB = itemB?.Name || valueB || "-";
+
+  const brandAName = brands.find((b) => b.Code === brandA)?.Name || "";
+  const brandBName = brands.find((b) => b.Code === brandB)?.Name || "";
+
+  const materialAName = listA.find((m) => m.Code === valueA)?.Name || "";
+  const materialBName = listB.find((m) => m.Code === valueB)?.Name || "";
+
+  const labelAFull = [brandAName, materialAName].filter(Boolean).join(" ");
+  const labelBFull = [brandBName, materialBName].filter(Boolean).join(" ");
 
   // Подписи X (опционально): например, уровни нагрузки 1..8
   const xLabels = useMemo(() => Array.from({ length: 8 }, (_, i) => i + 1), []);
@@ -174,14 +306,56 @@ export default function Vibro() {
           </h2>
           <div style={{ marginTop: 8, textAlign: "center" }}>
             <strong>
-              {labelA} vs {labelB}:
+              {labelAFull || "-"} VS {labelBFull || "-"}
             </strong>{" "}
-            <span style={{ color: isEqual ? "green" : "orange" }}>
+            {/* <span style={{ color: isEqual ? "green" : "orange" }}>
               {isEqual ? "совпадают" : "разные"}
-            </span>
+            </span> */}
           </div>
 
-          {/* New */}
+          <div
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
+          >
+            <label>
+              <select
+                value={brandA}
+                onChange={(e) => setBrandA(e.target.value)}
+                style={{
+                  display: "block",
+                  marginTop: 8,
+                  padding: 8,
+                  width: "100%",
+                }}
+              >
+                <option value="">Выберите бренд...</option>
+                {brands?.map((item) => (
+                  <option key={item.Code} value={item.Code}>
+                    {item.Name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label>
+              <select
+                value={brandB}
+                onChange={(e) => setBrandB(e.target.value)}
+                style={{
+                  display: "block",
+                  marginTop: 8,
+                  padding: 8,
+                  width: "100%",
+                }}
+              >
+                <option value="">Выберите бренд...</option>
+                {brands?.map((item) => (
+                  <option key={item.Code} value={item.Code}>
+                    {item.Name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
           <div
             style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
           >
@@ -197,9 +371,9 @@ export default function Vibro() {
                 }}
               >
                 <option value="">Выберите материал...</option>
-                {list.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.name}
+                {listA?.map((item) => (
+                  <option key={item.Code} value={item.Code}>
+                    {item.Name}
                   </option>
                 ))}
               </select>
@@ -217,73 +391,22 @@ export default function Vibro() {
                 }}
               >
                 <option value="">Выберите материал...</option>
-                {list.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.name}
+                {listB?.map((item) => (
+                  <option key={item.Code} value={item.Code}>
+                    {item.Name}
                   </option>
                 ))}
               </select>
             </label>
           </div>
 
-          {/* Old */}
-          {/* <div
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
-          >
-            <label>
-              <select
-                value={valueA}
-                onChange={(e) => setValueA(e.target.value)}
-                style={{
-                  display: "block",
-                  marginTop: 8,
-                  padding: 8,
-                  width: "100%",
-                }}
-              >
-                <option value="">Выберите материал...</option>
-                {items.map((item) => (
-                  <option
-                    key={item?.Id ?? item?.id ?? item?.Name}
-                    value={item?.Name}
-                  >
-                    {item?.Name}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label>
-              <select
-                value={valueB}
-                onChange={(e) => setValueB(e.target.value)}
-                style={{
-                  display: "block",
-                  marginTop: 8,
-                  padding: 8,
-                  width: "100%",
-                }}
-              >
-                <option value="">Выберите материал...</option>
-                {items.map((item) => (
-                  <option
-                    key={(item?.Id ?? item?.id ?? item?.Name) + "-b"}
-                    value={item?.Name}
-                  >
-                    {item?.Name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div> */}
-
           <div
             style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
           >
             <label>
               <select
-                value={valueA}
-                onChange={(e) => setValueA(e.target.value)}
+                value={thicknessA}
+                onChange={(e) => setThicknessA(e.target.value)}
                 style={{
                   display: "block",
                   marginTop: 8,
@@ -292,21 +415,17 @@ export default function Vibro() {
                 }}
               >
                 <option value="">Толщина материала...</option>
-                {items.map((item) => (
-                  <option
-                    key={item?.Id ?? item?.id ?? item?.Name}
-                    value={item?.Name}
-                  >
-                    {item?.Name}
+                {thicknessAOptions?.map((thickness) => (
+                  <option key={thickness.code} value={thickness.code}>
+                    {thickness.thickness}
                   </option>
                 ))}
               </select>
             </label>
-
             <label>
               <select
-                value={valueB}
-                onChange={(e) => setValueB(e.target.value)}
+                value={thicknessB}
+                onChange={(e) => setThicknessB(e.target.value)}
                 style={{
                   display: "block",
                   marginTop: 8,
@@ -315,20 +434,28 @@ export default function Vibro() {
                 }}
               >
                 <option value="">Толщина материала...</option>
-                {items.map((item) => (
-                  <option
-                    key={(item?.Id ?? item?.id ?? item?.Name) + "-b"}
-                    value={item?.Name}
-                  >
-                    {item?.Name}
+                {thicknessBOptions?.map((thickness) => (
+                  <option key={thickness.code} value={thickness.code}>
+                    {thickness.thickness}
                   </option>
                 ))}
               </select>
             </label>
+          </div>
+
+          <div
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
+          >
+            <div>
+              <Markdown>{infoA}</Markdown>
+            </div>
+            <div>
+              <Markdown>{infoB}</Markdown>
+            </div>
           </div>
 
           {chartData && <VibroChartNew chartData={chartData.measurements} />}
-
+          <Markdown>{chartData?.conclusion}</Markdown>
           {isComparable && (
             <div style={{ marginTop: 16 }}>
               {!isEqual && (

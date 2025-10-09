@@ -26,9 +26,9 @@ export default function App() {
           borderBottom: "1px solid #eee",
         }}
       >
-        <NavLink to="/" style={active}>
+        {/* <NavLink to="/" style={active}>
           Material
-        </NavLink>
+        </NavLink> */}
         <NavLink to="/vibro" style={active}>
           Compare
         </NavLink>
