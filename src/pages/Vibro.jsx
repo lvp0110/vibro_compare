@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import VibroChart, { FREQUENCIES } from "../components/charts/VibroChart";
 import VibroChartNew from "../components/charts/VibroChartNew";
 import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 // Helper: thickness endpoint for a model (adjust to match Swagger if needed)
 const getThicknessUrl = (modelId) =>
@@ -296,6 +297,12 @@ export default function Vibro() {
 
   return (
     <div style={{ width: 920, padding: 16 }}>
+      <Markdown remarkPlugins={[remarkGfm]}>
+        {`123  |2323   |
+| ------------ | ------------ |
+|   23223| 2323  |
+|   2323| 23232  |`}
+      </Markdown>
       {loading && <p>Загрузка.....</p>}
       {error && <p style={{ color: "crimson" }}>Ошибка: {error}</p>}
 
