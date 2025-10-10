@@ -456,6 +456,7 @@ export default function Vibro() {
 
           {chartData && <VibroChartNew chartData={chartData.measurements} />}
           <Markdown>{chartData?.conclusion}</Markdown>
+          <Markdown>{chartData?.table_results}</Markdown>
           {isComparable && (
             <div style={{ marginTop: 16 }}>
               {!isEqual && (

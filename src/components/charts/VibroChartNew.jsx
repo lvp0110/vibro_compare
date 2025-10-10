@@ -1,28 +1,46 @@
-// src/components/charts/VibroChart.jsx
 import {
   ResponsiveContainer,
   LineChart,
   Line,
+  Area,
   CartesianGrid,
   XAxis,
   YAxis,
-  Tooltip,
   Legend,
+  ReferenceLine,
 } from "recharts";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 
 export default function VibroChartNew({
   chartData,
   height = 400,
-  colors = { a: "#1976d2", b: "#e91e63" },
+  colors = {
+    a: "#1976d2",
+    b: "#e91e63",
+    areaPositive: "rgba(255, 0, 0, 0.25)", // над осью
+    areaNegative: "rgba(0, 255, 0, 0.25)", // под осью
+  },
 }) {
-  // Делаем категориальные подписи по X (равномерное распределение по экрану)
+  // Для отладки — можно удалить потом
+  useEffect(() => {
+    console.log("📊 chartData =", chartData);
+  }, [chartData]);
+
   const data = useMemo(() => {
-    return chartData.diagram_params.x_axis_points.map((freq, i) => ({
-      xLabel: String(freq), // категориальная метка
-      a: chartData.items[0].y_axis[i],
-      b: chartData.items[1].y_axis[i],
-    }));
+    if (!chartData?.diagram_params?.x_axis_points || !chartData?.items?.length)
+      return [];
+
+    return chartData.diagram_params.x_axis_points.map((freq, i) => {
+      const aValue = chartData.items[0].y_axis[i];
+      const bValue = chartData.items[1].y_axis[i];
+      return {
+        xLabel: String(freq), // ⚠️ X остаётся строкой, чтобы совпадали подписи
+        a: aValue,
+        b: bValue,
+        bPositive: bValue > 0 ? bValue : 0,
+        bNegative: bValue < 0 ? bValue : 0,
+      };
+    });
   }, [chartData]);
 
   return (
@@ -34,39 +52,55 @@ export default function VibroChartNew({
         >
           <CartesianGrid strokeDasharray="3 3" />
 
-          {/* Категориальная ось X: равномерные интервалы между метками */}
-          <XAxis
-            dataKey="xLabel"
-            type="category"
-            interval={0} // показывать все метки
-            tick={{ fontSize: 12 }}
-            // при желании можно добавить форматирование, но метка уже содержит частоту
-            // tickFormatter={(v) => `${v} Гц`}
-          />
+          {/* ⚙️ Ось X — категориальная (строковая) */}
+          <XAxis dataKey="xLabel" tick={{ fontSize: 12 }} />
 
-          {/* Фиксированный домен и тики по Y */}
           <YAxis
-            // domain={[Y_TICKS[0], Y_TICKS[Y_TICKS.length - 1]]}
             ticks={chartData.diagram_params.y_axis_points}
+            domain={[
+              chartData.diagram_params.min,
+              chartData.diagram_params.max,
+            ]}
             tick={{ fontSize: 12 }}
           />
 
-          {/* <Tooltip
-              labelFormatter={(label) => `Частота: ${label} Гц`}
-              formatter={(value, name) => [
-                Number.isFinite(value) ? value.toFixed(3) + (yUnit ? ` ${yUnit}` : "") : "—",
-                name,
-              ]}
-            /> */}
           <Legend />
 
+          {/* Линия нуля */}
+          <ReferenceLine y={0} stroke="black" strokeWidth={1.5} />
+
+          {/* 🟢 Заливка под осью */}
+          <Area
+            type="monotone"
+            dataKey="bNegative"
+            stroke="none"
+            fill={colors.areaNegative}
+            stackId="stack"
+            baseValue={0}
+            connectNulls
+            isAnimationActive={false}
+          />
+
+          {/* 🔴 Заливка над осью */}
+          <Area
+            type="monotone"
+            dataKey="bPositive"
+            stroke="none"
+            fill={colors.areaPositive}
+            stackId="stack"
+            baseValue={0}
+            connectNulls
+            isAnimationActive={false}
+          />
+
+          {/* Линии */}
           <Line
             type="monotone"
             dataKey="a"
             name={chartData.items[0].name}
             stroke={colors.a}
             strokeWidth={2}
-            dot={{ r: 3 }}
+            dot={false}
             connectNulls
           />
           <Line
@@ -75,7 +109,7 @@ export default function VibroChartNew({
             name={chartData.items[1].name}
             stroke={colors.b}
             strokeWidth={2}
-            dot={{ r: 3 }}
+            dot={false}
             connectNulls
           />
         </LineChart>
