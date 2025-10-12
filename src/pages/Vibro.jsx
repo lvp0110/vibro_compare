@@ -279,7 +279,8 @@ export default function Vibro() {
   }, [itemA, itemB, ignoredKeys]);
 
   const isComparable = !!itemA && !!itemB;
-  // const isEqual = isComparable && diffs.length === 0;
+  const isEqual = isComparable && diffs.length === 0;
+
   const labelA = itemA?.Name || valueA || "-";
   const labelB = itemB?.Name || valueB || "-";
 
@@ -297,12 +298,6 @@ export default function Vibro() {
 
   return (
     <div style={{ width: 920, padding: 16 }}>
-      <Markdown remarkPlugins={[remarkGfm]}>
-        {`123  |2323   |
-| ------------ | ------------ |
-|   23223| 2323  |
-|   2323| 23232  |`}
-      </Markdown>
       {loading && <p>Загрузка.....</p>}
       {error && <p style={{ color: "crimson" }}>Ошибка: {error}</p>}
 
@@ -461,9 +456,38 @@ export default function Vibro() {
             </div>
           </div>
 
-          {chartData && <VibroChartNew chartData={chartData.measurements} />}
-          <Markdown>{chartData?.conclusion}</Markdown>
-          <Markdown>{chartData?.table_results}</Markdown>
+          {/* Единый блок: график + таблица на одном уровне */}
+          {chartData && (
+            <>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "60% 1fr",
+                  gap: 16,
+                  alignItems: "start",
+                  marginTop: 16,
+                }}
+              >
+                <div>
+                  <VibroChartNew chartData={chartData.measurements} />
+                </div>
+                <div style={{ fontSize: "14px", display: "grid" }}>
+                  <Markdown
+                    remarkPlugins={[remarkGfm]}
+                  >
+                    {chartData.table_results}
+                  </Markdown>
+                </div>
+              </div>
+
+              {chartData?.conclusion && (
+                <Markdown style={{ marginTop: 8 }}>
+                  {chartData.conclusion}
+                </Markdown>
+              )}
+            </>
+          )}
+
           {isComparable && (
             <div style={{ marginTop: 16 }}>
               {!isEqual && (
@@ -483,16 +507,12 @@ export default function Vibro() {
                         <li key={key} style={{ marginBottom: 4 }}>
                           <span style={{ color: "#555" }}>{labelA}</span> ={" "}
                           <code>{formatVal(a)}</code> <br />
-                          {/* <span style={{ color: "#555" }}>{labelB}</span> ={" "}
-                          <code>{formatVal(b)}</code> */}
                         </li>
                       ))}
                     </ul>
                     <ul style={{ paddingLeft: 18, margin: 0 }}>
                       {diffs.map(({ key, a, b }) => (
                         <li key={key} style={{ marginBottom: 4 }}>
-                          {/* <span style={{ color: "#555" }}>{labelA}</span> ={" "}
-                          <code>{formatVal(a)}</code> <br /> */}
                           <span style={{ color: "#555" }}>{labelB}</span> ={" "}
                           <code>{formatVal(b)}</code>
                         </li>

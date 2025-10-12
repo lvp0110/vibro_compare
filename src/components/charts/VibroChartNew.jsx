@@ -1,6 +1,6 @@
 import {
   ResponsiveContainer,
-  LineChart,
+  AreaChart,
   Line,
   Area,
   CartesianGrid,
@@ -17,11 +17,10 @@ export default function VibroChartNew({
   colors = {
     a: "#1976d2",
     b: "#e91e63",
-    areaPositive: "rgba(255, 0, 0, 0.25)", // над осью
-    areaNegative: "rgba(0, 255, 0, 0.25)", // под осью
+    areaPositive: "rgba(255, 0, 0, 0.3)", // над осью
+    areaNegative: "rgba(0, 255, 0, 0.3)", // под осью
   },
 }) {
-  // Для отладки — можно удалить потом
   useEffect(() => {
     console.log("📊 chartData =", chartData);
   }, [chartData]);
@@ -31,12 +30,15 @@ export default function VibroChartNew({
       return [];
 
     return chartData.diagram_params.x_axis_points.map((freq, i) => {
-      const aValue = chartData.items[0].y_axis[i];
-      const bValue = chartData.items[1].y_axis[i];
+      const aValue = chartData.items[0]?.y_axis?.[i] ?? 0;
+      const bValue = chartData.items[1]?.y_axis?.[i] ?? 0;
+
       return {
-        xLabel: String(freq), // ⚠️ X остаётся строкой, чтобы совпадали подписи
+        xLabel: String(freq),
         a: aValue,
         b: bValue,
+        aPositive: aValue > 0 ? aValue : 0,
+        aNegative: aValue < 0 ? aValue : 0,
         bPositive: bValue > 0 ? bValue : 0,
         bNegative: bValue < 0 ? bValue : 0,
       };
@@ -46,13 +48,12 @@ export default function VibroChartNew({
   return (
     <div style={{ width: "100%", height }}>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart
+        <AreaChart
           data={data}
           margin={{ top: 10, right: 20, bottom: 10, left: 0 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
 
-          {/* ⚙️ Ось X — категориальная (строковая) */}
           <XAxis dataKey="xLabel" tick={{ fontSize: 12 }} />
 
           <YAxis
@@ -66,38 +67,63 @@ export default function VibroChartNew({
 
           <Legend />
 
-          {/* Линия нуля */}
           <ReferenceLine y={0} stroke="black" strokeWidth={1.5} />
 
-          {/* 🟢 Заливка под осью */}
+          {/* Заливка серии A */}
+          <Area
+            type="monotone"
+            dataKey="aNegative"
+            stroke="none"
+            fill={colors.areaNegative}
+            stackId="stackA"
+            baseValue={0}
+            connectNulls
+            isAnimationActive={false}
+            legendType="none"
+            name=""
+          />
+          <Area
+            type="monotone"
+            dataKey="aPositive"
+            stroke="none"
+            fill={colors.areaPositive}
+            stackId="stackA"
+            baseValue={0}
+            connectNulls
+            isAnimationActive={false}
+            name=""
+          />
+
+          {/* Заливка серии B */}
           <Area
             type="monotone"
             dataKey="bNegative"
             stroke="none"
             fill={colors.areaNegative}
-            stackId="stack"
+            stackId="stackB"
             baseValue={0}
             connectNulls
             isAnimationActive={false}
+            name=""
           />
-
-          {/* 🔴 Заливка над осью */}
           <Area
             type="monotone"
             dataKey="bPositive"
             stroke="none"
             fill={colors.areaPositive}
-            stackId="stack"
+            stackId="stackB"
             baseValue={0}
             connectNulls
             isAnimationActive={false}
+            legendType="none"
+            name=""
           />
 
-          {/* Линии */}
+          {/* Линии поверх заливок */}
           <Line
             type="monotone"
             dataKey="a"
-            name={chartData.items[0].name}
+            name={chartData.items[0]?.name || "A"}
             stroke={colors.a}
             strokeWidth={2}
             dot={false}
@@ -106,13 +132,13 @@ export default function VibroChartNew({
           <Line
             type="monotone"
             dataKey="b"
-            name={chartData.items[1].name}
+            name={chartData.items[1]?.name || "B"}
             stroke={colors.b}
             strokeWidth={2}
             dot={false}
             connectNulls
           />
-        </LineChart>
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );
