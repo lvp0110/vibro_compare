@@ -27,7 +27,13 @@ function normalizeParams(raw) {
       if (typeof p === "string") return { id: `param-${i}`, Name: p.trim() };
       if (p && typeof p === "object") {
         const name =
-          p?.Name ?? p?.name ?? p?.Title ?? p?.title ?? p?.label ?? p?.Label ?? `Параметр ${i + 1}`;
+          p?.Name ??
+          p?.name ??
+          p?.Title ??
+          p?.title ??
+          p?.label ??
+          p?.Label ??
+          `Параметр ${i + 1}`;
         const id = p?.Id ?? p?.id ?? p?.ID ?? `${name}-${i}`;
         return { id, Name: String(name).trim() };
       }
@@ -49,7 +55,8 @@ function normalizeParams(raw) {
 // Берём только brand, model и params/Params. Остальные поля игнорируем
 function normalizeList(list) {
   return list.map((it, idx) => {
-    const name = it?.Name ?? it?.name ?? it?.Title ?? it?.title ?? `Элемент ${idx + 1}`;
+    const name =
+      it?.Name ?? it?.name ?? it?.Title ?? it?.title ?? `Элемент ${idx + 1}`;
     const id = it?.Id ?? it?.id ?? it?.ID ?? it?._id ?? `${name}-${idx}`;
 
     const brand = it?.brand ?? "Без бренда";
@@ -123,7 +130,7 @@ function buildTree(items) {
 }
 
 export default function Home() {
-  const API_URL = "http://localhost:3005/vibro/list";
+  const API_URL = `${import.meta.env.VITE_API_URL}/vibro/list`;
 
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -159,10 +166,15 @@ export default function Home() {
         const json = await res.json();
 
         let list = Array.isArray(json) ? json : null;
-        if (!list) list = json?.data && Array.isArray(json.data) ? json.data : null;
-        if (!list) list = json?.items && Array.isArray(json.items) ? json.items : null;
-        if (!list) list = json?.result && Array.isArray(json.result) ? json.result : null;
-        if (!list) list = json?.rows && Array.isArray(json.rows) ? json.rows : null;
+        if (!list)
+          list = json?.data && Array.isArray(json.data) ? json.data : null;
+        if (!list)
+          list = json?.items && Array.isArray(json.items) ? json.items : null;
+        if (!list)
+          list =
+            json?.result && Array.isArray(json.result) ? json.result : null;
+        if (!list)
+          list = json?.rows && Array.isArray(json.rows) ? json.rows : null;
         if (!list) list = findFirstArrayDeep(json);
 
         if (!list || !Array.isArray(list)) {
@@ -171,7 +183,8 @@ export default function Home() {
         }
 
         const normalized = normalizeList(list);
-        if (normalized.length === 0) throw new Error("Сервер вернул пустой список");
+        if (normalized.length === 0)
+          throw new Error("Сервер вернул пустой список");
 
         setItems(normalized);
 
@@ -205,8 +218,7 @@ export default function Home() {
       return `${selected.brand}   ${selected.model}   ${selected.param}`;
     if (selected.level === "model")
       return `${selected.brand}   ${selected.model}`;
-    if (selected.level === "brand")
-      return selected.brand || "Описание";
+    if (selected.level === "brand") return selected.brand || "Описание";
     return tree[0]?.name || "Описание";
   }, [selected, tree]);
 
@@ -229,9 +241,12 @@ export default function Home() {
     });
   };
 
-  const isBrandSelected = (brand) => selected.level === "brand" && selected.brand === brand;
+  const isBrandSelected = (brand) =>
+    selected.level === "brand" && selected.brand === brand;
   const isModelSelected = (brand, model) =>
-    selected.level === "model" && selected.brand === brand && selected.model === model;
+    selected.level === "model" &&
+    selected.brand === brand &&
+    selected.model === model;
   const isParamSelected = (brand, model, param) =>
     selected.level === "param" &&
     selected.brand === brand &&
@@ -266,7 +281,9 @@ export default function Home() {
 
         {loading && <div>Загрузка…</div>}
         {error && <div style={{ color: "crimson" }}>Ошибка: {error}</div>}
-        {!loading && !error && tree.length === 0 && <div>Данные отсутствуют</div>}
+        {!loading && !error && tree.length === 0 && (
+          <div>Данные отсутствуют</div>
+        )}
 
         <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
           {tree.map((brandNode) => (
@@ -274,14 +291,21 @@ export default function Home() {
               <button
                 onClick={() => {
                   toggleBrand(brandNode.name);
-                  setSelected({ level: "brand", brand: brandNode.name, model: "", param: "" });
+                  setSelected({
+                    level: "brand",
+                    brand: brandNode.name,
+                    model: "",
+                    param: "",
+                  });
                 }}
                 style={{
                   width: "100%",
                   textAlign: "left",
                   padding: "10px 12px",
                   borderRadius: 8,
-                  border: isBrandSelected(brandNode.name) ? "2px solid #555" : "1px solid #ddd",
+                  border: isBrandSelected(brandNode.name)
+                    ? "2px solid #555"
+                    : "1px solid #ddd",
                   cursor: "pointer",
                   fontSize: 16,
                 }}
@@ -292,7 +316,9 @@ export default function Home() {
               </button>
 
               {openBrands.has(brandNode.name) && (
-                <ul style={{ listStyle: "none", paddingLeft: 12, marginTop: 8 }}>
+                <ul
+                  style={{ listStyle: "none", paddingLeft: 12, marginTop: 8 }}
+                >
                   {brandNode.models.map(([modelName, params]) => {
                     const key = `${brandNode.name}||${modelName}`;
                     const opened = openModels.has(key);
@@ -321,15 +347,27 @@ export default function Home() {
                             fontSize: 14,
                           }}
                           title={modelName}
-                          aria-pressed={isModelSelected(brandNode.name, modelName)}
+                          aria-pressed={isModelSelected(
+                            brandNode.name,
+                            modelName
+                          )}
                         >
                           {modelName}
                         </button>
 
                         {opened && params.length > 0 && (
-                          <ul style={{ listStyle: "none", paddingLeft: 12, marginTop: 6 }}>
+                          <ul
+                            style={{
+                              listStyle: "none",
+                              paddingLeft: 12,
+                              marginTop: 6,
+                            }}
+                          >
                             {params.map((param) => (
-                              <li key={`param-${param.id}`} style={{ marginBottom: 4 }}>
+                              <li
+                                key={`param-${param.id}`}
+                                style={{ marginBottom: 4 }}
+                              >
                                 <button
                                   onClick={() =>
                                     setSelected({
@@ -344,14 +382,22 @@ export default function Home() {
                                     textAlign: "left",
                                     padding: "6px 10px",
                                     borderRadius: 6,
-                                    border: isParamSelected(brandNode.name, modelName, param.Name)
+                                    border: isParamSelected(
+                                      brandNode.name,
+                                      modelName,
+                                      param.Name
+                                    )
                                       ? "2px solid #777"
                                       : "1px solid #eee",
                                     cursor: "pointer",
                                     fontSize: 13,
                                   }}
                                   title={param.Name}
-                                  aria-pressed={isParamSelected(brandNode.name, modelName, param.Name)}
+                                  aria-pressed={isParamSelected(
+                                    brandNode.name,
+                                    modelName,
+                                    param.Name
+                                  )}
                                 >
                                   {param.Name}
                                 </button>
@@ -360,7 +406,13 @@ export default function Home() {
                           </ul>
                         )}
                         {opened && params.length === 0 && (
-                          <div style={{ fontSize: 12, color: "#999", paddingLeft: 12 }}>
+                          <div
+                            style={{
+                              fontSize: 12,
+                              color: "#999",
+                              paddingLeft: 12,
+                            }}
+                          >
                             Нет параметров
                           </div>
                         )}

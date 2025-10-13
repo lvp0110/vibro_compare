@@ -5,10 +5,11 @@
   "type": "module",
   "homepage": "https://lvp0110.github.io/vibro_compare/",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:local": "vite --mode developmentLocal",
+    "dev": "vite --mode development",
+    "build": "vite build --mode stage"
   },
   "dependencies": {
     "apexcharts": "^5.3.5",

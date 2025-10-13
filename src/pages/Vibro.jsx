@@ -6,7 +6,9 @@ import remarkGfm from "remark-gfm";
 
 // Helper: thickness endpoint for a model (adjust to match Swagger if needed)
 const getThicknessUrl = (modelId) =>
-  `http://localhost:3005/vibro/models/${encodeURIComponent(modelId)}/sizes`; //51.250.123.41
+  `${import.meta.env.VITE_API_URL}/vibro/models/${encodeURIComponent(
+    modelId
+  )}/sizes`; //51.250.123.41
 
 export default function Vibro() {
   const [brands, setBrands] = useState([]);
@@ -38,9 +40,12 @@ export default function Vibro() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch("http://localhost:3005/vibro/brands", {
-          headers: { Accept: "application/json" },
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/vibro/brands`,
+          {
+            headers: { Accept: "application/json" },
+          }
+        );
 
         const response = await res.json();
 
@@ -55,7 +60,7 @@ export default function Vibro() {
     async function load() {
       try {
         const res = await fetch(
-          `http://localhost:3005/vibro/models/${brandA}`,
+          `${import.meta.env.VITE_API_URL}/vibro/models/${brandA}`,
           {
             headers: { Accept: "application/json" },
           }
@@ -76,7 +81,7 @@ export default function Vibro() {
     async function load() {
       try {
         const res = await fetch(
-          `http://localhost:3005/vibro/models/${brandB}`,
+          `${import.meta.env.VITE_API_URL}/vibro/models/${brandB}`,
           {
             headers: { Accept: "application/json" },
           }
@@ -97,19 +102,22 @@ export default function Vibro() {
     if (valueA && valueB && thicknessA && thicknessB) {
       (async () => {
         try {
-          const res = await fetch(`http://localhost:3005/vibro/graph`, {
-            method: "POST",
-            body: JSON.stringify([
-              {
-                model_code: valueA,
-                size_code: thicknessA,
-              },
-              {
-                model_code: valueB,
-                size_code: thicknessB,
-              },
-            ]),
-          });
+          const res = await fetch(
+            `${import.meta.env.VITE_API_URL}/vibro/graph`,
+            {
+              method: "POST",
+              body: JSON.stringify([
+                {
+                  model_code: valueA,
+                  size_code: thicknessA,
+                },
+                {
+                  model_code: valueB,
+                  size_code: thicknessB,
+                },
+              ]),
+            }
+          );
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
 
@@ -128,7 +136,9 @@ export default function Vibro() {
           )?.thickness;
 
           const res = await fetch(
-            `http://localhost:3005/vibro/material/model/${valueA}/thickness/${thickness}`
+            `${
+              import.meta.env.VITE_API_URL
+            }/vibro/material/model/${valueA}/thickness/${thickness}`
           );
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
@@ -148,7 +158,9 @@ export default function Vibro() {
 
         try {
           const res = await fetch(
-            `http://localhost:3005/vibro/material/model/${valueB}/thickness/${thickness}`
+            `${
+              import.meta.env.VITE_API_URL
+            }/vibro/material/model/${valueB}/thickness/${thickness}`
           );
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
