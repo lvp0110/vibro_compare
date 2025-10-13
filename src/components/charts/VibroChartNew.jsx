@@ -15,10 +15,10 @@ export default function VibroChartNew({
   chartData,
   height = 400,
   colors = {
-    a: "#1976d2",
-    b: "#e91e63",
-    areaPositive: "rgba(255, 0, 0, 0.3)", // над осью
-    areaNegative: "rgba(0, 255, 0, 0.3)", // под осью
+    a: "#1976d2",                         //#e91e63
+    b: "#e91e63",                         //#1976d2
+    areaPositive: "rgba(0, 255, 0, 0.3)", // над осью
+    areaNegative: "rgba(255, 0, 0, 0.3)", // под осью
   },
 }) {
   useEffect(() => {
@@ -72,7 +72,7 @@ export default function VibroChartNew({
           {/* Заливка серии A */}
           <Area
             type="monotone"
-            dataKey="работает"
+            dataKey="aNegative"
             stroke="none"
             fill={colors.areaNegative}
             stackId="stackA"

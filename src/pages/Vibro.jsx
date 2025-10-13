@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm";
 
 // Helper: thickness endpoint for a model (adjust to match Swagger if needed)
 const getThicknessUrl = (modelId) =>
-  `http://51.250.123.41:3005/vibro/models/${encodeURIComponent(modelId)}/sizes`; //51.250.123.41
+  `http://localhost:3005/vibro/models/${encodeURIComponent(modelId)}/sizes`; //51.250.123.41
 
 export default function Vibro() {
   const [brands, setBrands] = useState([]);
@@ -38,7 +38,7 @@ export default function Vibro() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch("http://51.250.123.41:3005/vibro/brands", {
+        const res = await fetch("http://localhost:3005/vibro/brands", {
           headers: { Accept: "application/json" },
         });
 
@@ -55,7 +55,7 @@ export default function Vibro() {
     async function load() {
       try {
         const res = await fetch(
-          `http://51.250.123.41:3005/vibro/models/${brandA}`,
+          `http://localhost:3005/vibro/models/${brandA}`,
           {
             headers: { Accept: "application/json" },
           }
@@ -76,7 +76,7 @@ export default function Vibro() {
     async function load() {
       try {
         const res = await fetch(
-          `http://51.250.123.41:3005/vibro/models/${brandB}`,
+          `http://localhost:3005/vibro/models/${brandB}`,
           {
             headers: { Accept: "application/json" },
           }
@@ -97,7 +97,7 @@ export default function Vibro() {
     if (valueA && valueB && thicknessA && thicknessB) {
       (async () => {
         try {
-          const res = await fetch(`http://51.250.123.41:3005/vibro/graph`, {
+          const res = await fetch(`http://localhost:3005/vibro/graph`, {
             method: "POST",
             body: JSON.stringify([
               {
@@ -128,7 +128,7 @@ export default function Vibro() {
           )?.thickness;
 
           const res = await fetch(
-            `http://51.250.123.41:3005/vibro/material/model/${valueA}/thickness/${thickness}`
+            `http://localhost:3005/vibro/material/model/${valueA}/thickness/${thickness}`
           );
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
@@ -148,7 +148,7 @@ export default function Vibro() {
 
         try {
           const res = await fetch(
-            `http://51.250.123.41:3005/vibro/material/model/${valueB}/thickness/${thickness}`
+            `http://localhost:3005/vibro/material/model/${valueB}/thickness/${thickness}`
           );
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
@@ -472,19 +472,28 @@ export default function Vibro() {
                   <VibroChartNew chartData={chartData.measurements} />
                 </div>
                 <div style={{ fontSize: "14px", display: "grid" }}>
-                  <Markdown
-                    remarkPlugins={[remarkGfm]}
-                  >
+                  <Markdown remarkPlugins={[remarkGfm]}>
                     {chartData.table_results}
                   </Markdown>
                 </div>
               </div>
-
               {chartData?.conclusion && (
                 <Markdown style={{ marginTop: 8 }}>
                   {chartData.conclusion}
                 </Markdown>
               )}
+              <hr />
+              <p> Все данные взяты из открытых источников </p>
+              <small>
+                {new Date()
+                  .toLocaleDateString("ru-RU", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                  })
+                  .replace(" г.", " г.")
+                  .replace(/^./, (c) => c.toUpperCase())}
+              </small>
             </>
           )}
 
@@ -521,7 +530,7 @@ export default function Vibro() {
                   </div>
                 </div>
               )}
-              <div style={{ padding: "16px 0px" }}>
+              {/* <div style={{ padding: "16px 0px" }}>
                 <VibroChart
                   seriesA={seriesA}
                   seriesB={seriesB}
@@ -532,7 +541,7 @@ export default function Vibro() {
                   yUnit="g"
                 />
                 <small>Частоты (Гц): {FREQUENCIES.join(", ")}</small>
-              </div>
+              </div> */}
             </div>
           )}
         </>
