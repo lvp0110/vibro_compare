@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm";
 
 // Helper: thickness endpoint for a model (adjust to match Swagger if needed)
 const getThicknessUrl = (modelId) =>
-  `http://localhost:3005/vibro/models/${encodeURIComponent(modelId)}/sizes`;
+  `http://51.250.123.41:3005/vibro/models/${encodeURIComponent(modelId)}/sizes`; //51.250.123.41
 
 export default function Vibro() {
   const [brands, setBrands] = useState([]);
@@ -38,7 +38,7 @@ export default function Vibro() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch("http://localhost:3005/vibro/brands", {
+        const res = await fetch("http://51.250.123.41:3005/vibro/brands", {
           headers: { Accept: "application/json" },
         });
 
@@ -55,7 +55,7 @@ export default function Vibro() {
     async function load() {
       try {
         const res = await fetch(
-          `http://localhost:3005/vibro/models/${brandA}`,
+          `http://51.250.123.41:3005/vibro/models/${brandA}`,
           {
             headers: { Accept: "application/json" },
           }
@@ -76,7 +76,7 @@ export default function Vibro() {
     async function load() {
       try {
         const res = await fetch(
-          `http://localhost:3005/vibro/models/${brandB}`,
+          `http://51.250.123.41:3005/vibro/models/${brandB}`,
           {
             headers: { Accept: "application/json" },
           }
@@ -97,7 +97,7 @@ export default function Vibro() {
     if (valueA && valueB && thicknessA && thicknessB) {
       (async () => {
         try {
-          const res = await fetch(`http://localhost:3005/vibro/graph`, {
+          const res = await fetch(`http://51.250.123.41:3005/vibro/graph`, {
             method: "POST",
             body: JSON.stringify([
               {
@@ -128,7 +128,7 @@ export default function Vibro() {
           )?.thickness;
 
           const res = await fetch(
-            `http://localhost:3005/vibro/material/model/${valueA}/thickness/${thickness}`
+            `http://51.250.123.41:3005/vibro/material/model/${valueA}/thickness/${thickness}`
           );
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
@@ -148,7 +148,7 @@ export default function Vibro() {
 
         try {
           const res = await fetch(
-            `http://localhost:3005/vibro/material/model/${valueB}/thickness/${thickness}`
+            `http://51.250.123.41:3005/vibro/material/model/${valueB}/thickness/${thickness}`
           );
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();

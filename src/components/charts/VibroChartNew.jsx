@@ -72,7 +72,7 @@ export default function VibroChartNew({
           {/* Заливка серии A */}
           <Area
             type="monotone"
-            dataKey="aNegative"
+            dataKey="работает"
             stroke="none"
             fill={colors.areaNegative}
             stackId="stackA"
