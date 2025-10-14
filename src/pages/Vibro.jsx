@@ -494,18 +494,19 @@ export default function Vibro() {
                   {chartData.conclusion}
                 </Markdown>
               )}
-              <hr />
-              <p> Все данные взяты из открытых источников </p>
-              <small>
-                {new Date()
-                  .toLocaleDateString("ru-RU", {
-                    day: "2-digit",
-                    month: "long",
-                    year: "numeric",
-                  })
-                  .replace(" г.", " г.")
-                  .replace(/^./, (c) => c.toUpperCase())}
-              </small>
+              <div style={{ border: "solid 1px white", display: "flex",alignItems: "center", justifyContent:"center", gap: "30px"}}>
+                <p> Все данные взяты из открытых источников </p> 
+                <small>
+                  {new Date()
+                    .toLocaleDateString("ru-RU", {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric",
+                    })
+                    .replace(" г.", " г.")
+                    .replace(/^./, (c) => c.toUpperCase())}
+                </small>
+              </div>
             </>
           )}
 
