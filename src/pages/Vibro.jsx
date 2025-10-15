@@ -119,7 +119,7 @@ export default function Vibro() {
               ]),
             }
           );
-          if (!res.ok) throw new Error(`HTTPS ${res.status}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
 
           setChartData(json.data);
@@ -141,7 +141,7 @@ export default function Vibro() {
               import.meta.env.VITE_API_URL
             }/vibro/material/model/${valueA}/thickness/${thickness}`
           );
-          if (!res.ok) throw new Error(`HTTPS ${res.status}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
 
           setInfoA(json.data);
@@ -163,7 +163,7 @@ export default function Vibro() {
               import.meta.env.VITE_API_URL
             }/vibro/material/model/${valueB}/thickness/${thickness}`
           );
-          if (!res.ok) throw new Error(`HTTPS ${res.status}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
 
           setInfoB(json.data);
@@ -181,7 +181,7 @@ export default function Vibro() {
         const res = await fetch("/api/v2/material/list/vibro", {
           signal: controller.signal,
         });
-        if (!res.ok) throw new Error(`HTTPS ${res.status}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
         const list = Array.isArray(json)
           ? json
@@ -225,7 +225,7 @@ export default function Vibro() {
         const res = await fetch(getThicknessUrl(valueA), {
           headers: { Accept: "application/json" },
         });
-        if (!res.ok) throw new Error(`HTTPS ${res.status}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
 
         setThicknessAOptions(json.data);
@@ -242,7 +242,7 @@ export default function Vibro() {
         const res = await fetch(getThicknessUrl(valueB), {
           headers: { Accept: "application/json" },
         });
-        if (!res.ok) throw new Error(`HTTPS ${res.status}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
 
         setThicknessBOptions(json.data);
