@@ -3,7 +3,7 @@ import VibroChart, { FREQUENCIES } from "../components/charts/VibroChart";
 import VibroChartNew from "../components/charts/VibroChartNew";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import "./Vibro.css"
+import "./Vibro.css";
 
 // Helper: thickness endpoint for a model (adjust to match Swagger if needed)
 const getThicknessUrl = (modelId) =>
@@ -181,7 +181,7 @@ export default function Vibro() {
         const res = await fetch("/api/v2/material/list/vibro", {
           signal: controller.signal,
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error(`HTTPS ${res.status}`);
         const json = await res.json();
         const list = Array.isArray(json)
           ? json
@@ -225,7 +225,7 @@ export default function Vibro() {
         const res = await fetch(getThicknessUrl(valueA), {
           headers: { Accept: "application/json" },
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error(`HTTPS ${res.status}`);
         const json = await res.json();
 
         setThicknessAOptions(json.data);
@@ -242,7 +242,7 @@ export default function Vibro() {
         const res = await fetch(getThicknessUrl(valueB), {
           headers: { Accept: "application/json" },
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error(`HTTPS ${res.status}`);
         const json = await res.json();
 
         setThicknessBOptions(json.data);
@@ -308,7 +308,7 @@ export default function Vibro() {
 
   // Подписи X (опционально): например, уровни нагрузки 1..8
   const xLabels = useMemo(() => Array.from({ length: 8 }, (_, i) => i + 1), []);
-    
+
   return (
     <div style={{ width: 920, padding: 16 }}>
       {loading && <p>Загрузка.....</p>}
@@ -495,8 +495,16 @@ export default function Vibro() {
                   {chartData.conclusion}
                 </Markdown>
               )}
-              <div style={{ border: "solid 1px white", display: "flex",alignItems: "center", justifyContent:"center", gap: "30px"}}>
-                <p> Все данные взяты из открытых источников </p> 
+              <div
+                style={{
+                  border: "solid 1px white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "30px",
+                }}
+              >
+                <p> Все данные взяты из открытых источников </p>
                 <small>
                   {new Date()
                     .toLocaleDateString("ru-RU", {
