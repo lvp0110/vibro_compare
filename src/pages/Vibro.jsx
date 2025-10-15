@@ -3,6 +3,7 @@ import VibroChart, { FREQUENCIES } from "../components/charts/VibroChart";
 import VibroChartNew from "../components/charts/VibroChartNew";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import "./Vibro.css"
 
 // Helper: thickness endpoint for a model (adjust to match Swagger if needed)
 const getThicknessUrl = (modelId) =>
@@ -118,7 +119,7 @@ export default function Vibro() {
               ]),
             }
           );
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          if (!res.ok) throw new Error(`HTTPS ${res.status}`);
           const json = await res.json();
 
           setChartData(json.data);
@@ -140,7 +141,7 @@ export default function Vibro() {
               import.meta.env.VITE_API_URL
             }/vibro/material/model/${valueA}/thickness/${thickness}`
           );
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          if (!res.ok) throw new Error(`HTTPS ${res.status}`);
           const json = await res.json();
 
           setInfoA(json.data);
@@ -162,7 +163,7 @@ export default function Vibro() {
               import.meta.env.VITE_API_URL
             }/vibro/material/model/${valueB}/thickness/${thickness}`
           );
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          if (!res.ok) throw new Error(`HTTPS ${res.status}`);
           const json = await res.json();
 
           setInfoB(json.data);
@@ -307,7 +308,7 @@ export default function Vibro() {
 
   // Подписи X (опционально): например, уровни нагрузки 1..8
   const xLabels = useMemo(() => Array.from({ length: 8 }, (_, i) => i + 1), []);
-
+    
   return (
     <div style={{ width: 920, padding: 16 }}>
       {loading && <p>Загрузка.....</p>}
