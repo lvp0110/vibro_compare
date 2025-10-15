@@ -22,7 +22,7 @@ export default function VibroChartNew({
   },
 }) {
   useEffect(() => {
-    console.log("📊 chartData =", chartData);
+    // console.log("📊 chartData =", chartData);
   }, [chartData]);
 
   const data = useMemo(() => {
