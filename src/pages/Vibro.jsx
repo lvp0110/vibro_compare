@@ -6,9 +6,7 @@ import "./Vibro.css";
 
 // Helper: thickness endpoint for a model (adjust to match Swagger if needed)
 const getThicknessUrl = (modelId) =>
-  `${import.meta.env.VITE_API_URL}/vibro/models/${encodeURIComponent(
-    modelId
-  )}/sizes`;
+  `${import.meta.env.VITE_API_URL}/vibro/models/${encodeURIComponent(modelId)}/sizes`;
 
 export default function Vibro() {
   const [brands, setBrands] = useState([]);
@@ -34,99 +32,92 @@ export default function Vibro() {
   const [infoA, setInfoA] = useState("");
   const [infoB, setInfoB] = useState("");
 
+  // Load brands
   useEffect(() => {
-    async function load() {
+    const controller = new AbortController();
+    (async () => {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/vibro/brands`, {
           headers: { Accept: "application/json" },
+          signal: controller.signal,
         });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const response = await res.json();
-        setBrands(response.data);
-      } catch {}
-    }
-    load();
+        setBrands(response.data || []);
+      } catch (e) {
+        if (e.name !== "AbortError") console.error(e);
+      }
+    })();
+    return () => controller.abort();
   }, []);
 
+  // Reset branch A when brandA changes
   useEffect(() => {
-    async function load() {
+    setValueA("");
+    setThicknessA("");
+    setThicknessAOptions([]);
+    setInfoA("");
+    setListA([]);
+    setChartData(null);
+  }, [brandA]);
+
+  // Reset branch B when brandB changes
+  useEffect(() => {
+    setValueB("");
+    setThicknessB("");
+    setThicknessBOptions([]);
+    setInfoB("");
+    setListB([]);
+    setChartData(null);
+  }, [brandB]);
+
+  // Load models for brandA
+  useEffect(() => {
+    if (!brandA) {
+      setListA([]);
+      return;
+    }
+    const controller = new AbortController();
+    (async () => {
       try {
         const res = await fetch(
           `${import.meta.env.VITE_API_URL}/vibro/models/${brandA}`,
-          { headers: { Accept: "application/json" } }
+          { headers: { Accept: "application/json" }, signal: controller.signal }
         );
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const response = await res.json();
-        setListA(response.data);
-      } catch {}
-    }
-    if (brandA) load();
+        setListA(response.data || []);
+      } catch (e) {
+        if (e.name !== "AbortError") console.error(e);
+      }
+    })();
+    return () => controller.abort();
   }, [brandA]);
 
+  // Load models for brandB
   useEffect(() => {
-    async function load() {
+    if (!brandB) {
+      setListB([]);
+      return;
+    }
+    const controller = new AbortController();
+    (async () => {
       try {
         const res = await fetch(
           `${import.meta.env.VITE_API_URL}/vibro/models/${brandB}`,
-          { headers: { Accept: "application/json" } }
+          { headers: { Accept: "application/json" }, signal: controller.signal }
         );
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const response = await res.json();
-        setListB(response.data);
-      } catch {}
-    }
-    if (brandB) load();
+        setListB(response.data || []);
+      } catch (e) {
+        if (e.name !== "AbortError") console.error(e);
+      }
+    })();
+    return () => controller.abort();
   }, [brandB]);
 
-  useEffect(() => {
-    if (valueA && valueB && thicknessA && thicknessB) {
-      (async () => {
-        try {
-          const res = await fetch(`${import.meta.env.VITE_API_URL}/vibro/graph`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Accept: "application/json" },
-            body: JSON.stringify([
-              { model_code: valueA, size_code: thicknessA },
-              { model_code: valueB, size_code: thicknessB },
-            ]),
-          });
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const json = await res.json();
-          setChartData(json.data);
-        } catch {}
-      })();
-    }
-  }, [valueA, valueB, thicknessA, thicknessB]);
-
-  useEffect(() => {
-    if (valueA && thicknessA) {
-      (async () => {
-        try {
-          const thickness = thicknessAOptions.find((item) => item.code === thicknessA)?.thickness;
-          const res = await fetch(
-            `${import.meta.env.VITE_API_URL}/vibro/material/model/${valueA}/thickness/${thickness}`
-          );
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const json = await res.json();
-          setInfoA(json.data);
-        } catch (e) {}
-      })();
-    }
-  }, [valueA, thicknessA, thicknessAOptions]);
-
-  useEffect(() => {
-    if (valueB && thicknessB) {
-      (async () => {
-        const thickness = thicknessBOptions.find((item) => item.code === thicknessB)?.thickness;
-        try {
-          const res = await fetch(
-            `${import.meta.env.VITE_API_URL}/vibro/material/model/${valueB}/thickness/${thickness}`
-          );
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const json = await res.json();
-          setInfoB(json.data);
-        } catch (e) {}
-      })();
-    }
-  }, [valueB, thicknessB, thicknessBOptions]);
-
+  // Load reference items list (Sylomer)
   useEffect(() => {
     const controller = new AbortController();
     (async () => {
@@ -161,37 +152,133 @@ export default function Vibro() {
   const itemA = useMemo(() => items.find((it) => it?.Name === valueA), [items, valueA]);
   const itemB = useMemo(() => items.find((it) => it?.Name === valueB), [items, valueB]);
 
+  // Load thickness options for valueA
   useEffect(() => {
+    setThicknessA("");
+    setThicknessAOptions([]);
+    if (!valueA) return;
+
+    const controller = new AbortController();
     (async () => {
-      setThicknessA("");
-      setThicknessAOptions([]);
-      if (!valueA) return;
       try {
         const res = await fetch(getThicknessUrl(valueA), {
           headers: { Accept: "application/json" },
+          signal: controller.signal,
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
-        setThicknessAOptions(json.data);
-      } catch {}
+        setThicknessAOptions(json.data || []);
+      } catch (e) {
+        if (e.name !== "AbortError") console.error(e);
+      }
     })();
+    return () => controller.abort();
   }, [valueA]);
 
+  // Load thickness options for valueB
   useEffect(() => {
+    setThicknessB("");
+    setThicknessBOptions([]);
+    if (!valueB) return;
+
+    const controller = new AbortController();
     (async () => {
-      setThicknessB("");
-      setThicknessBOptions([]);
-      if (!valueB) return;
       try {
         const res = await fetch(getThicknessUrl(valueB), {
           headers: { Accept: "application/json" },
+          signal: controller.signal,
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
-        setThicknessBOptions(json.data);
-      } catch {}
+        setThicknessBOptions(json.data || []);
+      } catch (e) {
+        if (e.name !== "AbortError") console.error(e);
+      }
     })();
+    return () => controller.abort();
   }, [valueB]);
+
+  // Load infoA when valueA + thicknessA selected
+  useEffect(() => {
+    setInfoA("");
+    if (!valueA || !thicknessA) return;
+
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const thickness = thicknessAOptions.find((item) => item.code === thicknessA)?.thickness;
+        if (!thickness) return;
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/vibro/material/model/${valueA}/thickness/${thickness}`,
+          { signal: controller.signal }
+        );
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        setInfoA(json.data || "");
+      } catch (e) {
+        if (e.name !== "AbortError") console.error(e);
+      }
+    })();
+
+    return () => controller.abort();
+  }, [valueA, thicknessA, thicknessAOptions]);
+
+  // Load infoB when valueB + thicknessB selected
+  useEffect(() => {
+    setInfoB("");
+    if (!valueB || !thicknessB) return;
+
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const thickness = thicknessBOptions.find((item) => item.code === thicknessB)?.thickness;
+        if (!thickness) return;
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/vibro/material/model/${valueB}/thickness/${thickness}`,
+          { signal: controller.signal }
+        );
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        setInfoB(json.data || "");
+      } catch (e) {
+        if (e.name !== "AbortError") console.error(e);
+      }
+    })();
+
+    return () => controller.abort();
+  }, [valueB, thicknessB, thicknessBOptions]);
+
+  // Load chart when all params selected; clear chart on any change or incomplete params
+  useEffect(() => {
+    if (!(valueA && valueB && thicknessA && thicknessB)) {
+      setChartData(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    (async () => {
+      try {
+        // явно скрыть предыдущий график, пока грузится новый
+        setChartData(null);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/vibro/graph`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify([
+            { model_code: valueA, size_code: thicknessA },
+            { model_code: valueB, size_code: thicknessB },
+          ]),
+          signal: controller.signal,
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        setChartData(json.data || null);
+      } catch (e) {
+        if (e.name !== "AbortError") console.error(e);
+      }
+    })();
+
+    return () => controller.abort();
+  }, [valueA, valueB, thicknessA, thicknessB]);
 
   const ignoredKeys = useMemo(() => new Set(["__typename"]), []);
   const isObject = (v) => v !== null && typeof v === "object";
@@ -210,9 +297,9 @@ export default function Vibro() {
 
   const diffs = useMemo(() => {
     if (!itemA || !itemB) return [];
-    const keys = Array.from(
-      new Set([...Object.keys(itemA || {}), ...Object.keys(itemB || {})])
-    ).filter((k) => !ignoredKeys.has(k));
+    const keys = Array.from(new Set([...Object.keys(itemA || {}), ...Object.keys(itemB || {})])).filter(
+      (k) => !ignoredKeys.has(k)
+    );
     return keys.reduce((acc, key) => {
       const a = itemA[key];
       const b = itemB[key];
@@ -270,6 +357,7 @@ export default function Vibro() {
                     value={valueA}
                     onChange={(e) => setValueA(e.target.value)}
                     className="vibro-select"
+                    disabled={!brandA || listA.length === 0}
                   >
                     <option value="">Выберите материал...</option>
                     {listA?.map((item) => (
@@ -285,6 +373,7 @@ export default function Vibro() {
                     value={thicknessA}
                     onChange={(e) => setThicknessA(e.target.value)}
                     className="vibro-select"
+                    disabled={!valueA || thicknessAOptions.length === 0}
                   >
                     <option value="">Толщина материала...</option>
                     {thicknessAOptions?.map((thickness) => (
@@ -326,6 +415,7 @@ export default function Vibro() {
                     value={valueB}
                     onChange={(e) => setValueB(e.target.value)}
                     className="vibro-select"
+                    disabled={!brandB || listB.length === 0}
                   >
                     <option value="">Выберите материал...</option>
                     {listB?.map((item) => (
@@ -341,6 +431,7 @@ export default function Vibro() {
                     value={thicknessB}
                     onChange={(e) => setThicknessB(e.target.value)}
                     className="vibro-select"
+                    disabled={!valueB || thicknessBOptions.length === 0}
                   >
                     <option value="">Толщина материала...</option>
                     {thicknessBOptions?.map((thickness) => (
@@ -356,7 +447,7 @@ export default function Vibro() {
               <div className="vibro-info">
                 <Markdown>{infoB}</Markdown>
               </div>
-            </div> 
+            </div>
           </div>
 
           {/* Единый блок: график + таблица */}

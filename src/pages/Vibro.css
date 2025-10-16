@@ -90,6 +90,44 @@
   gap: 30px;
 }
 
+/* === Только стили для option (кроссбраузерная унификация) === */
+/* Базовый вид элементов списка */
+.vibro-select option {
+  background-color: #0f172a; /* единый фон */
+  color: #f1f5f9;            /* единый цвет текста */
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Состояния наведения/выбора (Safari может игнорировать hover) */
+.vibro-select option:hover,
+.vibro-select option:checked,
+.vibro-select option:focus {
+  background-color: #1e293b;
+  color: #ffffff;
+}
+
+/* Отключённые пункты */
+.vibro-select option:disabled {
+  color: #94a3b8;
+  background-color: #111827;
+}
+
+/* Поддержка групп, если появятся */
+.vibro-select optgroup {
+  background-color: inherit;
+  color: #9ca3af;
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* Высокая контрастность: стараемся сохранить цвета */
+@media (forced-colors: active) {
+  .vibro-select option {
+    forced-color-adjust: none;
+  }
+}
+
 /* Responsive Breakpoint */
 @media screen and (max-width: 1024px) {
   .vibro-brand-material-grid {

@@ -33,7 +33,6 @@ export default function App() {
         <NavLink to="/vibro" style={active}>
           Compare
         </NavLink>
-        {/* <a href="https://db.acoustic.ru" target="_blank" rel="noreferrer">Docs</a> */}
       </header>
 
       <main
