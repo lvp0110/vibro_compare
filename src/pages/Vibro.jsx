@@ -8,10 +8,10 @@ import "./Vibro.css";
 const getThicknessUrl = (modelId) =>
   `${import.meta.env.VITE_API_URL}/vibro/models/${encodeURIComponent(
     modelId
-  )}/sizes`; 
+  )}/sizes`;
 
 export default function Vibro() {
-  const [brands, setBrands] = useState([])
+  const [brands, setBrands] = useState([]);
 
   const [brandA, setBrandA] = useState("");
   const [brandB, setBrandB] = useState("");
@@ -37,19 +37,13 @@ export default function Vibro() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/vibro/brands`,
-          {
-            headers: { Accept: "application/json" },
-          }
-        );
-
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/vibro/brands`, {
+          headers: { Accept: "application/json" },
+        });
         const response = await res.json();
-
         setBrands(response.data);
       } catch {}
     }
-
     load();
   }, []);
 
@@ -58,20 +52,13 @@ export default function Vibro() {
       try {
         const res = await fetch(
           `${import.meta.env.VITE_API_URL}/vibro/models/${brandA}`,
-          {
-            headers: { Accept: "application/json" },
-          }
+          { headers: { Accept: "application/json" } }
         );
-
         const response = await res.json();
-
         setListA(response.data);
       } catch {}
     }
-
-    if (brandA) {
-      load();
-    }
+    if (brandA) load();
   }, [brandA]);
 
   useEffect(() => {
@@ -79,45 +66,29 @@ export default function Vibro() {
       try {
         const res = await fetch(
           `${import.meta.env.VITE_API_URL}/vibro/models/${brandB}`,
-          {
-            headers: { Accept: "application/json" },
-          }
+          { headers: { Accept: "application/json" } }
         );
-
         const response = await res.json();
-
         setListB(response.data);
       } catch {}
     }
-
-    if (brandB) {
-      load();
-    }
+    if (brandB) load();
   }, [brandB]);
 
   useEffect(() => {
     if (valueA && valueB && thicknessA && thicknessB) {
       (async () => {
         try {
-          const res = await fetch(
-            `${import.meta.env.VITE_API_URL}/vibro/graph`,
-            {
-              method: "POST",
-              body: JSON.stringify([
-                {
-                  model_code: valueA,
-                  size_code: thicknessA,
-                },
-                {
-                  model_code: valueB,
-                  size_code: thicknessB,
-                },
-              ]),
-            }
-          );
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/vibro/graph`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify([
+              { model_code: valueA, size_code: thicknessA },
+              { model_code: valueB, size_code: thicknessB },
+            ]),
+          });
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
-
           setChartData(json.data);
         } catch {}
       })();
@@ -128,18 +99,12 @@ export default function Vibro() {
     if (valueA && thicknessA) {
       (async () => {
         try {
-          const thickness = thicknessAOptions.find(
-            (item) => item.code === thicknessA
-          )?.thickness;
-
+          const thickness = thicknessAOptions.find((item) => item.code === thicknessA)?.thickness;
           const res = await fetch(
-            `${
-              import.meta.env.VITE_API_URL
-            }/vibro/material/model/${valueA}/thickness/${thickness}`
+            `${import.meta.env.VITE_API_URL}/vibro/material/model/${valueA}/thickness/${thickness}`
           );
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
-
           setInfoA(json.data);
         } catch (e) {}
       })();
@@ -149,19 +114,13 @@ export default function Vibro() {
   useEffect(() => {
     if (valueB && thicknessB) {
       (async () => {
-        const thickness = thicknessBOptions.find(
-          (item) => item.code === thicknessB
-        )?.thickness;
-
+        const thickness = thicknessBOptions.find((item) => item.code === thicknessB)?.thickness;
         try {
           const res = await fetch(
-            `${
-              import.meta.env.VITE_API_URL
-            }/vibro/material/model/${valueB}/thickness/${thickness}`
+            `${import.meta.env.VITE_API_URL}/vibro/material/model/${valueB}/thickness/${thickness}`
           );
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
-
           setInfoB(json.data);
         } catch (e) {}
       })();
@@ -174,12 +133,9 @@ export default function Vibro() {
       try {
         setLoading(true);
         setError("");
-        const res = await fetch(
-          "http://localhost:3005/api/v2/material/list/vibro", 
-          {
-            signal: controller.signal,
-          }
-        );
+        const res = await fetch("https://constrtodo.ru:3005/api/v2/material/list/vibro", {
+          signal: controller.signal,
+        });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
         const list = Array.isArray(json)
@@ -189,13 +145,9 @@ export default function Vibro() {
           : Array.isArray(json?.items)
           ? json.items
           : [];
-
         const filtered = list.filter(
-          (it) =>
-            typeof it?.Name === "string" &&
-            it.Name.toLowerCase().includes("sylomer")
+          (it) => typeof it?.Name === "string" && it.Name.toLowerCase().includes("sylomer")
         );
-
         setItems(filtered);
       } catch (e) {
         if (e.name !== "AbortError") setError(e.message || "Ошибка загрузки");
@@ -206,14 +158,8 @@ export default function Vibro() {
     return () => controller.abort();
   }, []);
 
-  const itemA = useMemo(
-    () => items.find((it) => it?.Name === valueA),
-    [items, valueA]
-  );
-  const itemB = useMemo(
-    () => items.find((it) => it?.Name === valueB),
-    [items, valueB]
-  );
+  const itemA = useMemo(() => items.find((it) => it?.Name === valueA), [items, valueA]);
+  const itemB = useMemo(() => items.find((it) => it?.Name === valueB), [items, valueB]);
 
   useEffect(() => {
     (async () => {
@@ -226,7 +172,6 @@ export default function Vibro() {
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
-
         setThicknessAOptions(json.data);
       } catch {}
     })();
@@ -243,14 +188,12 @@ export default function Vibro() {
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
-
         setThicknessBOptions(json.data);
       } catch {}
     })();
   }, [valueB]);
 
   const ignoredKeys = useMemo(() => new Set(["__typename"]), []);
-
   const isObject = (v) => v !== null && typeof v === "object";
   const areValuesEqual = (a, b) => {
     if (a === b) return true;
@@ -270,7 +213,6 @@ export default function Vibro() {
     const keys = Array.from(
       new Set([...Object.keys(itemA || {}), ...Object.keys(itemB || {})])
     ).filter((k) => !ignoredKeys.has(k));
-
     return keys.reduce((acc, key) => {
       const a = itemA[key];
       const b = itemB[key];
@@ -288,8 +230,6 @@ export default function Vibro() {
   const labelAFull = [brandAName, materialAName].filter(Boolean).join(" ");
   const labelBFull = [brandBName, materialBName].filter(Boolean).join(" ");
 
-  // Подписи X (опционально): например, уровни нагрузки 1..8
-
   return (
     <div className="vibro-container">
       {loading && <p className="vibro-loading vibro-error">Загрузка.....</p>}
@@ -297,16 +237,14 @@ export default function Vibro() {
 
       {!loading && !error && (
         <>
-          <h2 className="vibro-title">
-            Сравнение виброизоляционных материалов
-          </h2>
+          <h2 className="vibro-title">Сравнение виброизоляционных материалов</h2>
           <div className="vibro-comparison-label">
             <strong>
               {labelAFull || "-"} VS {labelBFull || "-"}
             </strong>
           </div>
 
-          {/* Бренд + (Материал и Толщина под ним) для A и B */}
+          {/* Бренд + (Материал и Толщина под ним) + Инфо для A и B */}
           <div className="vibro-brand-material-grid">
             {/* Колонка A */}
             <div>
@@ -356,6 +294,11 @@ export default function Vibro() {
                     ))}
                   </select>
                 </label>
+              </div>
+
+              {/* Информация по A прямо под селектами A */}
+              <div className="vibro-info">
+                <Markdown>{infoA}</Markdown>
               </div>
             </div>
 
@@ -408,16 +351,12 @@ export default function Vibro() {
                   </select>
                 </label>
               </div>
-            </div>
-          </div>
 
-          <div className="vibro-brand-material-grid">
-            <div>
-              <Markdown>{infoA}</Markdown>
-            </div>
-            <div>
-              <Markdown>{infoB}</Markdown>
-            </div>
+              {/* Информация по B прямо под селектами B */}
+              <div className="vibro-info">
+                <Markdown>{infoB}</Markdown>
+              </div>
+            </div> 
           </div>
 
           {/* Единый блок: график + таблица */}
@@ -433,13 +372,15 @@ export default function Vibro() {
                   </Markdown>
                 </div>
               </div>
+
               {chartData?.conclusion && (
                 <Markdown style={{ marginTop: 8 }}>
                   {chartData.conclusion}
                 </Markdown>
               )}
+
               <div className="vibro-footer">
-                <p> Все данные взяты из открытых источников </p>
+                <p>Все данные взяты из открытых источников</p>
                 <small>
                   {new Date()
                     .toLocaleDateString("ru-RU", {

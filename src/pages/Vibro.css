@@ -1,63 +1,114 @@
-
+/* Vibro.css */
 .vibro-container {
-    width: 1200px;
-  }
-  
-  .vibro-loading,
-  .vibro-error {
-    text-align: center;
-  }
-  
-  .vibro-error {
-    color: crimson;
-  }
-  
-  .vibro-title {
-    text-align: center;
-  }
-  
-  .vibro-comparison-label {
-    margin-top: 8px;
-    text-align: center;
-  }
-  
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.vibro-loading,
+.vibro-error {
+  text-align: center;
+}
+
+.vibro-error {
+  color: crimson;
+}
+
+.vibro-title {
+  text-align: center;
+}
+
+.vibro-comparison-label {
+  margin-top: 8px;
+  text-align: center;
+}
+
+.vibro-brand-material-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.vibro-select-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vibro-select {
+  display: block;
+  margin-top: 8px;
+  padding: 8px;
+  width: 100%;
+  border: 2px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+/* Specific select styles for A and B */
+.vibro-brand-material-grid > div:first-child .vibro-select {
+  border-color: rgba(0, 123, 255, 0.7); /* Blue for A */
+  background: fixed;
+  color: antiquewhite;
+}
+
+.vibro-brand-material-grid > div:last-child .vibro-select {
+  border-color: rgba(255, 0, 0, 0.7); /* Red for B */
+  background: fixed;
+  color: antiquewhite;
+}
+
+.vibro-select:focus {
+  outline: none;
+  border-color: rgba(0, 123, 255, 1);
+}
+
+.vibro-material-thickness-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.vibro-chart-grid {
+  display: grid;
+  grid-template-columns: 60% 1fr;
+  gap: 16px;
+  align-items: start;
+  margin-top: 16px;
+}
+
+.vibro-chart-info {
+  font-size: 14px;
+  display: grid;
+}
+
+.vibro-footer {
+  border: solid 1px white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+}
+
+/* Responsive Breakpoint */
+@media screen and (max-width: 1024px) {
   .vibro-brand-material-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-  
-  .vibro-select {
-    display: block;
-    margin-top: 8px;
-    padding: 8px;
-    width: 100%;
+    grid-template-columns: 1fr;
   }
   
   .vibro-material-thickness-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-top: 8px;
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
   
   .vibro-chart-grid {
-    display: grid;
-    grid-template-columns: 60% 1fr;
-    gap: 16px;
-    align-items: start;
-    margin-top: 16px;
-  }
-  
-  .vibro-chart-info {
-    font-size: 14px;
-    display: grid;
+    grid-template-columns: 1fr;
   }
   
   .vibro-footer {
-    border: solid 1px white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 30px;
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+    padding: 10px;
   }
+}
