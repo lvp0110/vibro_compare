@@ -1,5 +1,4 @@
 import { useEffect, useState, useMemo } from "react";
-import VibroChart, { FREQUENCIES } from "../components/charts/VibroChart";
 import VibroChartNew from "../components/charts/VibroChartNew";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -9,10 +8,10 @@ import "./Vibro.css";
 const getThicknessUrl = (modelId) =>
   `${import.meta.env.VITE_API_URL}/vibro/models/${encodeURIComponent(
     modelId
-  )}/sizes`; //51.250.123.41
+  )}/sizes`; 
 
 export default function Vibro() {
-  const [brands, setBrands] = useState([]);
+  const [brands, setBrands] = useState([])
 
   const [brandA, setBrandA] = useState("");
   const [brandB, setBrandB] = useState("");
@@ -27,8 +26,8 @@ export default function Vibro() {
   const [listB, setListB] = useState([]);
   const [chartData, setChartData] = useState(null);
 
-  const seriesA = [0.12, 0.18, 0.33, 0.41, 0.55, 0.62, 0.74, 0.89, 1.03, 1.03];
-  const seriesB = [0.1, 0.15, 0.28, 0.39, 0.5, 0.58, 0.7, 0.84, 0.98, 0.98];
+  // const seriesA = [0.12, 0.18, 0.33, 0.41, 0.55, 0.62, 0.74, 0.89, 1.03, 1.03];
+  // const seriesB = [0.1, 0.15, 0.28, 0.39, 0.5, 0.58, 0.7, 0.84, 0.98, 0.98];
 
   // Thickness per selected model
   const [thicknessAOptions, setThicknessAOptions] = useState([]);
@@ -178,9 +177,12 @@ export default function Vibro() {
       try {
         setLoading(true);
         setError("");
-        const res = await fetch("https://constrtodo.ru:3005/api/v2/material/list/vibro", {
-          signal: controller.signal,
-        });
+        const res = await fetch(
+          "http://localhost:3005/api/v2/material/list/vibro", 
+          {
+            signal: controller.signal,
+          }
+        );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
         const list = Array.isArray(json)
@@ -265,17 +267,17 @@ export default function Vibro() {
     }
     return false;
   };
-  const formatVal = (v) => {
-    if (v === undefined) return "undefined";
-    if (v === null) return "null";
-    if (typeof v === "string") return v;
-    if (typeof v === "number" || typeof v === "boolean") return String(v);
-    try {
-      return JSON.stringify(v);
-    } catch {
-      return String(v);
-    }
-  };
+  // const formatVal = (v) => {
+  //   if (v === undefined) return "undefined";
+  //   if (v === null) return "null";
+  //   if (typeof v === "string") return v;
+  //   if (typeof v === "number" || typeof v === "boolean") return String(v);
+  //   try {
+  //     return JSON.stringify(v);
+  //   } catch {
+  //     return String(v);
+  //   }
+  // };
 
   const diffs = useMemo(() => {
     if (!itemA || !itemB) return [];
@@ -291,11 +293,11 @@ export default function Vibro() {
     }, []);
   }, [itemA, itemB, ignoredKeys]);
 
-  const isComparable = !!itemA && !!itemB;
-  const isEqual = isComparable && diffs.length === 0;
+  // const isComparable = !!itemA && !!itemB;
+  // const isEqual = isComparable && diffs.length === 0;
 
-  const labelA = itemA?.Name || valueA || "-";
-  const labelB = itemB?.Name || valueB || "-";
+  // const labelA = itemA?.Name || valueA || "-";
+  // const labelB = itemB?.Name || valueB || "-";
 
   const brandAName = brands.find((b) => b.Code === brandA)?.Name || "";
   const brandBName = brands.find((b) => b.Code === brandB)?.Name || "";
@@ -307,160 +309,130 @@ export default function Vibro() {
   const labelBFull = [brandBName, materialBName].filter(Boolean).join(" ");
 
   // Подписи X (опционально): например, уровни нагрузки 1..8
-  const xLabels = useMemo(() => Array.from({ length: 8 }, (_, i) => i + 1), []);
+  // const xLabels = useMemo(() => Array.from({ length: 8 }, (_, i) => i + 1), []);
 
   return (
-    <div style={{ width: 920, padding: 16 }}>
-      {loading && <p>Загрузка.....</p>}
-      {error && <p style={{ color: "crimson" }}>Ошибка: {error}</p>}
+    <div className="vibro-container">
+      {loading && <p className="vibro-loading vibro-error">Загрузка.....</p>}
+      {error && <p className="vibro-error">Ошибка: {error}</p>}
 
       {!loading && !error && (
         <>
-          <h2 style={{ textAlign: "center" }}>
+          <h2 className="vibro-title">
             Сравнение виброизоляционных материалов
           </h2>
-          <div style={{ marginTop: 8, textAlign: "center" }}>
+          <div className="vibro-comparison-label">
             <strong>
               {labelAFull || "-"} VS {labelBFull || "-"}
-            </strong>{" "}
-            {/* <span style={{ color: isEqual ? "green" : "orange" }}>
-              {isEqual ? "совпадают" : "разные"}
-            </span> */}
+            </strong>
           </div>
 
-          <div
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
-          >
-            <label>
-              <select
-                value={brandA}
-                onChange={(e) => setBrandA(e.target.value)}
-                style={{
-                  display: "block",
-                  marginTop: 8,
-                  padding: 8,
-                  width: "100%",
-                }}
-              >
-                <option value="">Выберите бренд...</option>
-                {brands?.map((item) => (
-                  <option key={item.Code} value={item.Code}>
-                    {item.Name}
-                  </option>
-                ))}
-              </select>
-            </label>
+          {/* Бренд + (Материал и Толщина под ним) для A и B */}
+          <div className="vibro-brand-material-grid">
+            {/* Колонка A */}
+            <div>
+              <label>
+                <select
+                  value={brandA}
+                  onChange={(e) => setBrandA(e.target.value)}
+                  className="vibro-select"
+                >
+                  <option value="">Выберите бренд...</option>
+                  {brands?.map((item) => (
+                    <option key={item.Code} value={item.Code}>
+                      {item.Name}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-            <label>
-              <select
-                value={brandB}
-                onChange={(e) => setBrandB(e.target.value)}
-                style={{
-                  display: "block",
-                  marginTop: 8,
-                  padding: 8,
-                  width: "100%",
-                }}
-              >
-                <option value="">Выберите бренд...</option>
-                {brands?.map((item) => (
-                  <option key={item.Code} value={item.Code}>
-                    {item.Name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
-          >
-            <label>
-              <select
-                value={valueA}
-                onChange={(e) => setValueA(e.target.value)}
-                style={{
-                  display: "block",
-                  marginTop: 8,
-                  padding: 8,
-                  width: "100%",
-                }}
-              >
-                <option value="">Выберите материал...</option>
-                {listA?.map((item) => (
-                  <option key={item.Code} value={item.Code}>
-                    {item.Name}
-                  </option>
-                ))}
-              </select>
-            </label>
+              {/* Материал и Толщина — рядом, под брендом A */}
+              <div className="vibro-material-thickness-grid">
+                <label>
+                  <select
+                    value={valueA}
+                    onChange={(e) => setValueA(e.target.value)}
+                    className="vibro-select"
+                  >
+                    <option value="">Выберите материал...</option>
+                    {listA?.map((item) => (
+                      <option key={item.Code} value={item.Code}>
+                        {item.Name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
 
-            <label>
-              <select
-                value={valueB}
-                onChange={(e) => setValueB(e.target.value)}
-                style={{
-                  display: "block",
-                  marginTop: 8,
-                  padding: 8,
-                  width: "100%",
-                }}
-              >
-                <option value="">Выберите материал...</option>
-                {listB?.map((item) => (
-                  <option key={item.Code} value={item.Code}>
-                    {item.Name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
+                <label>
+                  <select
+                    value={thicknessA}
+                    onChange={(e) => setThicknessA(e.target.value)}
+                    className="vibro-select"
+                  >
+                    <option value="">Толщина материала...</option>
+                    {thicknessAOptions?.map((thickness) => (
+                      <option key={thickness.code} value={thickness.code}>
+                        {thickness.thickness}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </div>
 
-          <div
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
-          >
-            <label>
-              <select
-                value={thicknessA}
-                onChange={(e) => setThicknessA(e.target.value)}
-                style={{
-                  display: "block",
-                  marginTop: 8,
-                  padding: 8,
-                  width: "50%",
-                }}
-              >
-                <option value="">Толщина материала...</option>
-                {thicknessAOptions?.map((thickness) => (
-                  <option key={thickness.code} value={thickness.code}>
-                    {thickness.thickness}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              <select
-                value={thicknessB}
-                onChange={(e) => setThicknessB(e.target.value)}
-                style={{
-                  display: "block",
-                  marginTop: 8,
-                  padding: 8,
-                  width: "50%",
-                }}
-              >
-                <option value="">Толщина материала...</option>
-                {thicknessBOptions?.map((thickness) => (
-                  <option key={thickness.code} value={thickness.code}>
-                    {thickness.thickness}
-                  </option>
-                ))}
-              </select>
-            </label>
+            {/* Колонка B */}
+            <div>
+              <label>
+                <select
+                  value={brandB}
+                  onChange={(e) => setBrandB(e.target.value)}
+                  className="vibro-select"
+                >
+                  <option value="">Выберите бренд...</option>
+                  {brands?.map((item) => (
+                    <option key={item.Code} value={item.Code}>
+                      {item.Name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              {/* Материал и Толщина — рядом, под брендом B */}
+              <div className="vibro-material-thickness-grid">
+                <label>
+                  <select
+                    value={valueB}
+                    onChange={(e) => setValueB(e.target.value)}
+                    className="vibro-select"
+                  >
+                    <option value="">Выберите материал...</option>
+                    {listB?.map((item) => (
+                      <option key={item.Code} value={item.Code}>
+                        {item.Name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label>
+                  <select
+                    value={thicknessB}
+                    onChange={(e) => setThicknessB(e.target.value)}
+                    className="vibro-select"
+                  >
+                    <option value="">Толщина материала...</option>
+                    {thicknessBOptions?.map((thickness) => (
+                      <option key={thickness.code} value={thickness.code}>
+                        {thickness.thickness}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </div>
           </div>
 
-          <div
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
-          >
+          <div className="vibro-brand-material-grid">
             <div>
               <Markdown>{infoA}</Markdown>
             </div>
@@ -469,22 +441,14 @@ export default function Vibro() {
             </div>
           </div>
 
-          {/* Единый блок: график + таблица на одном уровне */}
+          {/* Единый блок: график + таблица */}
           {chartData && (
             <>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "60% 1fr",
-                  gap: 16,
-                  alignItems: "start",
-                  marginTop: 16,
-                }}
-              >
+              <div className="vibro-chart-grid">
                 <div>
                   <VibroChartNew chartData={chartData.measurements} />
                 </div>
-                <div style={{ fontSize: "14px", display: "grid" }}>
+                <div className="vibro-chart-info">
                   <Markdown remarkPlugins={[remarkGfm]}>
                     {chartData.table_results}
                   </Markdown>
@@ -495,15 +459,7 @@ export default function Vibro() {
                   {chartData.conclusion}
                 </Markdown>
               )}
-              <div
-                style={{
-                  border: "solid 1px white",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "30px",
-                }}
-              >
+              <div className="vibro-footer">
                 <p> Все данные взяты из открытых источников </p>
                 <small>
                   {new Date()
@@ -517,54 +473,6 @@ export default function Vibro() {
                 </small>
               </div>
             </>
-          )}
-
-          {isComparable && (
-            <div style={{ marginTop: 16 }}>
-              {!isEqual && (
-                <div style={{ marginTop: 8 }}>
-                  <div style={{ fontWeight: 600, marginBottom: 6 }}>
-                    Отличия ({diffs.length}):
-                  </div>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: 16,
-                    }}
-                  >
-                    <ul style={{ paddingLeft: 18, margin: 0 }}>
-                      {diffs.map(({ key, a, b }) => (
-                        <li key={key} style={{ marginBottom: 4 }}>
-                          <span style={{ color: "#555" }}>{labelA}</span> ={" "}
-                          <code>{formatVal(a)}</code> <br />
-                        </li>
-                      ))}
-                    </ul>
-                    <ul style={{ paddingLeft: 18, margin: 0 }}>
-                      {diffs.map(({ key, a, b }) => (
-                        <li key={key} style={{ marginBottom: 4 }}>
-                          <span style={{ color: "#555" }}>{labelB}</span> ={" "}
-                          <code>{formatVal(b)}</code>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              )}
-              {/* <div style={{ padding: "16px 0px" }}>
-                <VibroChart
-                  seriesA={seriesA}
-                  seriesB={seriesB}
-                  labelA={labelA}
-                  labelB={labelB}
-                  height={340}
-                  colors={{ a: "#1e88e5", b: "#d81b60" }}
-                  yUnit="g"
-                />
-                <small>Частоты (Гц): {FREQUENCIES.join(", ")}</small>
-              </div> */}
-            </div>
           )}
         </>
       )}

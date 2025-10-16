@@ -1,0 +1,63 @@
+
+.vibro-container {
+    width: 1200px;
+  }
+  
+  .vibro-loading,
+  .vibro-error {
+    text-align: center;
+  }
+  
+  .vibro-error {
+    color: crimson;
+  }
+  
+  .vibro-title {
+    text-align: center;
+  }
+  
+  .vibro-comparison-label {
+    margin-top: 8px;
+    text-align: center;
+  }
+  
+  .vibro-brand-material-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  
+  .vibro-select {
+    display: block;
+    margin-top: 8px;
+    padding: 8px;
+    width: 100%;
+  }
+  
+  .vibro-material-thickness-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+  
+  .vibro-chart-grid {
+    display: grid;
+    grid-template-columns: 60% 1fr;
+    gap: 16px;
+    align-items: start;
+    margin-top: 16px;
+  }
+  
+  .vibro-chart-info {
+    font-size: 14px;
+    display: grid;
+  }
+  
+  .vibro-footer {
+    border: solid 1px white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+  }
