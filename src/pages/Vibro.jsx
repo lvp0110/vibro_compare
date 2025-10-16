@@ -26,9 +26,6 @@ export default function Vibro() {
   const [listB, setListB] = useState([]);
   const [chartData, setChartData] = useState(null);
 
-  // const seriesA = [0.12, 0.18, 0.33, 0.41, 0.55, 0.62, 0.74, 0.89, 1.03, 1.03];
-  // const seriesB = [0.1, 0.15, 0.28, 0.39, 0.5, 0.58, 0.7, 0.84, 0.98, 0.98];
-
   // Thickness per selected model
   const [thicknessAOptions, setThicknessAOptions] = useState([]);
   const [thicknessBOptions, setThicknessBOptions] = useState([]);
@@ -267,17 +264,6 @@ export default function Vibro() {
     }
     return false;
   };
-  // const formatVal = (v) => {
-  //   if (v === undefined) return "undefined";
-  //   if (v === null) return "null";
-  //   if (typeof v === "string") return v;
-  //   if (typeof v === "number" || typeof v === "boolean") return String(v);
-  //   try {
-  //     return JSON.stringify(v);
-  //   } catch {
-  //     return String(v);
-  //   }
-  // };
 
   const diffs = useMemo(() => {
     if (!itemA || !itemB) return [];
@@ -293,12 +279,6 @@ export default function Vibro() {
     }, []);
   }, [itemA, itemB, ignoredKeys]);
 
-  // const isComparable = !!itemA && !!itemB;
-  // const isEqual = isComparable && diffs.length === 0;
-
-  // const labelA = itemA?.Name || valueA || "-";
-  // const labelB = itemB?.Name || valueB || "-";
-
   const brandAName = brands.find((b) => b.Code === brandA)?.Name || "";
   const brandBName = brands.find((b) => b.Code === brandB)?.Name || "";
 
@@ -309,7 +289,6 @@ export default function Vibro() {
   const labelBFull = [brandBName, materialBName].filter(Boolean).join(" ");
 
   // Подписи X (опционально): например, уровни нагрузки 1..8
-  // const xLabels = useMemo(() => Array.from({ length: 8 }, (_, i) => i + 1), []);
 
   return (
     <div className="vibro-container">
