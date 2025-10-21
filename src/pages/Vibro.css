@@ -84,6 +84,7 @@
 
 .vibro-footer {
   border: solid 1px white;
+  padding: 16px;
   display: flex;
   align-items: center;
   justify-content: center;

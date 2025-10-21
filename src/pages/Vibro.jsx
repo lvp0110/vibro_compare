@@ -124,7 +124,7 @@ export default function Vibro() {
       try {
         setLoading(true);
         setError("");
-        const res = await fetch("https://constrtodo.ru:3005/api/v2/material/list/vibro", {
+        const res = await fetch("http://localhost:3005/api/v2/material/list/vibro", {
           signal: controller.signal,
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -471,7 +471,13 @@ export default function Vibro() {
               )}
 
               <div className="vibro-footer">
-                <p>Все данные взяты из открытых источников</p>
+                <p>Примечание:</p>
+                  <ul>
+                    <li>данные рассчитаны при форм-факторе q = 3,</li>
+                    <li>все показатели соответствуют предельной 
+                  нагрузке отдельно взятого материала</li>
+                  <li style={{listStyle: "none", fontStyle: "italic", fontWeight: "200"}}>* все данные взяты из открытых источников</li>
+                  </ul>
                 <small>
                   {new Date()
                     .toLocaleDateString("ru-RU", {
