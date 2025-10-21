@@ -123,8 +123,8 @@ export default function Vibro() {
     (async () => {
       try {
         setLoading(true);
-        setError("");
-        const res = await fetch("http://localhost:3005/api/v2/material/list/vibro", {
+        setError(""); //localhost:3005
+        const res = await fetch("https://constrtodo.ru:3005/api/v2/material/list/vibro", {
           signal: controller.signal,
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
