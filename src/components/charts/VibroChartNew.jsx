@@ -17,8 +17,8 @@ export default function VibroChartNew({
   colors = {
     a: "#1976d2",                         //#e91e63
     b: "#e91e63",                         //#1976d2
-    areaPositive: "rgba(0, 255, 0, 0.3)", // над осью
-    areaNegative: "rgba(255, 0, 0, 0.3)", // под осью
+    areaPositive: "rgba(255, 0, 0, 0.3)", // над осью
+    areaNegative: "rgba(0, 255, 0, 0.3)", // под осью
   },
 }) {
   useEffect(() => {
@@ -37,10 +37,10 @@ export default function VibroChartNew({
         xLabel: String(freq),
         a: aValue,
         b: bValue,
-        "позитив": aValue > 0 ? aValue : 0,
+        "негатив": aValue > 0 ? aValue : 0,
         aNegative: aValue < 0 ? aValue : 0,
         bPositive: bValue > 0 ? bValue : 0,
-        "негатив": bValue < 0 ? bValue : 0,
+        "позитив": bValue < 0 ? bValue : 0,
       };
     });
   }, [chartData]);
@@ -84,7 +84,7 @@ export default function VibroChartNew({
           />
           <Area
             type="monotone"
-            dataKey="позитив"
+            dataKey="негатив"
             stroke="none"
             fill={colors.areaPositive}
             stackId="stackA"
@@ -97,7 +97,7 @@ export default function VibroChartNew({
           {/* Заливка серии B */}
           <Area
             type="monotone"
-            dataKey="негатив"
+            dataKey="позитив"
             stroke="none"
             fill={colors.areaNegative}
             stackId="stackB"
