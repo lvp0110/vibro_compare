@@ -17,8 +17,8 @@ export default function VibroChartNew({
   colors = {
     a: "#1976d2",                         //#e91e63
     b: "#e91e63",                         //#1976d2
-    areaPositive: "rgba(0, 255, 0, 0.3)", // над осью
-    areaNegative: "rgba(255, 0, 0, 0.3)", // под осью
+    areaPositive: "rgba(255, 0, 0, 0.3)", // над осью
+    areaNegative: "rgba(0, 255, 0, 0.3)", // под осью
   },
 }) {
   useEffect(() => {
