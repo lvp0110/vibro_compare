@@ -15,8 +15,8 @@ export default function VibroChartNew({
   chartData,
   height = 400,
   colors = {
-    a: "#1976d2",                         //#e91e63
-    b: "#e91e63",                         //#1976d2
+    a: "#1976d2", //#e91e63
+    b: "#e91e63", //#1976d2
     areaPositive: "rgba(255, 0, 0, 0.3)", // над осью
     areaNegative: "rgba(0, 255, 0, 0.3)", // под осью
   },
@@ -34,13 +34,14 @@ export default function VibroChartNew({
       const bValue = chartData.items[1]?.y_axis?.[i] ?? 0;
 
       return {
-        xLabel: String(freq),
+        freq,
+        xLog: Math.log10(freq),
         a: aValue,
         b: bValue,
-        "негатив": aValue > 0 ? aValue : 0,
+        негатив: aValue > 0 ? aValue : 0,
         aNegative: aValue < 0 ? aValue : 0,
         bPositive: bValue > 0 ? bValue : 0,
-        "позитив": bValue < 0 ? bValue : 0,
+        позитив: bValue < 0 ? bValue : 0,
       };
     });
   }, [chartData]);
@@ -54,7 +55,26 @@ export default function VibroChartNew({
         >
           <CartesianGrid strokeDasharray="3 3" />
 
-          <XAxis dataKey="xLabel" tick={{ fontSize: 12 }} />
+          <XAxis
+            dataKey="xLog"
+            type="number"
+            domain={[
+              Math.log10(chartData.diagram_params.x_axis_points[0]),
+              Math.log10(chartData.diagram_params.x_axis_points.at(-1)),
+            ]}
+            ticks={chartData.diagram_params.x_axis_display.map((f) =>
+              Math.log10(f)
+            )} // ← готовые ISO-точки
+            interval={0}
+            tickFormatter={(value) =>
+              `${
+                Math.pow(10, value) < 10
+                  ? Math.pow(10, value).toFixed(1)
+                  : Math.round(Math.pow(10, value))
+              } Hz`
+            }
+            tick={{ fontSize: 12 }}
+          />
 
           <YAxis
             ticks={chartData.diagram_params.y_axis_points}

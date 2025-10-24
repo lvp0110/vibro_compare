@@ -124,7 +124,7 @@ export default function Vibro() {
       try {
         setLoading(true);
         setError(""); //localhost:3005  constrtodo.ru:3005
-        const res = await fetch("https://constrtodo.ru:3005/api/v2/material/list/vibro", {
+        const res = await fetch("http://localhost:3005/api/v2/material/list/vibro", {
           signal: controller.signal,
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -496,3 +496,4 @@ export default function Vibro() {
     </div>
   );
 }
+   
