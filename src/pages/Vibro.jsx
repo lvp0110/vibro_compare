@@ -6,7 +6,9 @@ import "./Vibro.css";
 
 // Helper: thickness endpoint for a model (adjust to match Swagger if needed)
 const getThicknessUrl = (modelId) =>
-  `${import.meta.env.VITE_API_URL}/vibro/models/${encodeURIComponent(modelId)}/sizes`;
+  `${import.meta.env.VITE_API_URL}/vibro/models/${encodeURIComponent(
+    modelId
+  )}/sizes`;
 
 export default function Vibro() {
   const [brands, setBrands] = useState([]);
@@ -32,15 +34,20 @@ export default function Vibro() {
   const [infoA, setInfoA] = useState("");
   const [infoB, setInfoB] = useState("");
 
+  const ICON_URL = "http://localhost:3005/api/v1/constr/pdf_icon.png";
+
   // Load brands
   useEffect(() => {
     const controller = new AbortController();
     (async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/vibro/brands`, {
-          headers: { Accept: "application/json" },
-          signal: controller.signal,
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/vibro/brands`,
+          {
+            headers: { Accept: "application/json" },
+            signal: controller.signal,
+          }
+        );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const response = await res.json();
         setBrands(response.data || []);
@@ -124,9 +131,12 @@ export default function Vibro() {
       try {
         setLoading(true);
         setError(""); //localhost:3005  constrtodo.ru:3005
-        const res = await fetch("https://constrtodo.ru:3005/api/v2/material/list/vibro", {
-          signal: controller.signal,
-        });
+        const res = await fetch(
+          "https://constrtodo.ru:3005/api/v2/material/list/vibro",
+          {
+            signal: controller.signal,
+          }
+        );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
         const list = Array.isArray(json)
@@ -137,7 +147,9 @@ export default function Vibro() {
           ? json.items
           : [];
         const filtered = list.filter(
-          (it) => typeof it?.Name === "string" && it.Name.toLowerCase().includes("sylomer")
+          (it) =>
+            typeof it?.Name === "string" &&
+            it.Name.toLowerCase().includes("sylomer")
         );
         setItems(filtered);
       } catch (e) {
@@ -149,8 +161,14 @@ export default function Vibro() {
     return () => controller.abort();
   }, []);
 
-  const itemA = useMemo(() => items.find((it) => it?.Name === valueA), [items, valueA]);
-  const itemB = useMemo(() => items.find((it) => it?.Name === valueB), [items, valueB]);
+  const itemA = useMemo(
+    () => items.find((it) => it?.Name === valueA),
+    [items, valueA]
+  );
+  const itemB = useMemo(
+    () => items.find((it) => it?.Name === valueB),
+    [items, valueB]
+  );
 
   // Load thickness options for valueA
   useEffect(() => {
@@ -206,10 +224,14 @@ export default function Vibro() {
     const controller = new AbortController();
     (async () => {
       try {
-        const thickness = thicknessAOptions.find((item) => item.code === thicknessA)?.thickness;
+        const thickness = thicknessAOptions.find(
+          (item) => item.code === thicknessA
+        )?.thickness;
         if (!thickness) return;
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/vibro/material/model/${valueA}/thickness/${thickness}`,
+          `${
+            import.meta.env.VITE_API_URL
+          }/vibro/material/model/${valueA}/thickness/${thickness}`,
           { signal: controller.signal }
         );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -231,10 +253,14 @@ export default function Vibro() {
     const controller = new AbortController();
     (async () => {
       try {
-        const thickness = thicknessBOptions.find((item) => item.code === thicknessB)?.thickness;
+        const thickness = thicknessBOptions.find(
+          (item) => item.code === thicknessB
+        )?.thickness;
         if (!thickness) return;
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/vibro/material/model/${valueB}/thickness/${thickness}`,
+          `${
+            import.meta.env.VITE_API_URL
+          }/vibro/material/model/${valueB}/thickness/${thickness}`,
           { signal: controller.signal }
         );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -262,7 +288,10 @@ export default function Vibro() {
         setChartData(null);
         const res = await fetch(`${import.meta.env.VITE_API_URL}/vibro/graph`, {
           method: "POST",
-          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
           body: JSON.stringify([
             { model_code: valueA, size_code: thicknessA },
             { model_code: valueB, size_code: thicknessB },
@@ -297,9 +326,9 @@ export default function Vibro() {
 
   const diffs = useMemo(() => {
     if (!itemA || !itemB) return [];
-    const keys = Array.from(new Set([...Object.keys(itemA || {}), ...Object.keys(itemB || {})])).filter(
-      (k) => !ignoredKeys.has(k)
-    );
+    const keys = Array.from(
+      new Set([...Object.keys(itemA || {}), ...Object.keys(itemB || {})])
+    ).filter((k) => !ignoredKeys.has(k));
     return keys.reduce((acc, key) => {
       const a = itemA[key];
       const b = itemB[key];
@@ -324,7 +353,9 @@ export default function Vibro() {
 
       {!loading && !error && (
         <>
-          <h2 className="vibro-title">Сравнение виброизоляционных материалов</h2>
+          <h2 className="vibro-title">
+            Сравнение виброизоляционных материалов
+          </h2>
           <div className="vibro-comparison-label">
             <strong>
               {labelAFull || "-"} VS {labelBFull || "-"}
@@ -469,15 +500,32 @@ export default function Vibro() {
                   {chartData.conclusion}
                 </Markdown>
               )}
+              {/* <img
+                role="button"
+                src={ICON_URL}
+                alt="Иконка"
+                width={40}
+                height={40}
+              /> */}
 
               <div className="vibro-footer">
                 <p>Примечание:</p>
-                  <ul>
-                    <li>данные рассчитаны при форм-факторе q = 3,</li>
-                    <li>все показатели соответствуют предельной 
-                  нагрузке отдельно взятого материала</li>
-                  <li style={{listStyle: "none", fontStyle: "italic", fontWeight: "200"}}>* все данные взяты из открытых источников</li>
-                  </ul>
+                <ul>
+                  <li>данные рассчитаны при форм-факторе q = 3,</li>
+                  <li>
+                    все показатели соответствуют предельной нагрузке отдельно
+                    взятого материала
+                  </li>
+                  <li
+                    style={{
+                      listStyle: "none",
+                      fontStyle: "italic",
+                      fontWeight: "200",
+                    }}
+                  >
+                    * все данные взяты из открытых источников
+                  </li>
+                </ul>
                 <small>
                   {new Date()
                     .toLocaleDateString("ru-RU", {
@@ -496,4 +544,3 @@ export default function Vibro() {
     </div>
   );
 }
-   

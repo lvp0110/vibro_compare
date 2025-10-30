@@ -2,7 +2,7 @@
 .vibro-container {
   width: 100%;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 10px auto;
 }
 
 .vibro-loading,
@@ -72,7 +72,7 @@
 .vibro-chart-grid {
   display: grid;
   grid-template-columns: 60% 1fr;
-  gap: 16px;
+  gap: 1px;
   align-items: start;
   margin-top: 16px;
 }
@@ -80,8 +80,12 @@
 .vibro-chart-info {
   font-size: 14px;
   display: grid;
+  margin-right: 40px;
 }
-
+.vibro-chart-info td {
+  border: solid 1px #94a3b8;
+  padding: 3px;
+}
 .vibro-footer {
   border: solid 1px white;
   padding: 16px;
@@ -95,7 +99,7 @@
 /* Базовый вид элементов списка */
 .vibro-select option {
   background-color: #0f172a; /* единый фон */
-  color: #f1f5f9;            /* единый цвет текста */
+  color: #f1f5f9; /* единый цвет текста */
   font-size: 14px;
   line-height: 1.4;
 }
@@ -134,20 +138,24 @@
   .vibro-brand-material-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .vibro-material-thickness-grid {
     grid-template-columns: 1fr;
     gap: 8px;
   }
-  
+
   .vibro-chart-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .vibro-footer {
     flex-direction: column;
-    text-align: center;
+    text-align: start;
     gap: 10px;
     padding: 10px;
+    margin-top: 10px;
+  }
+  .vibro-chart-info {
+    margin-right: 0px;
   }
 }

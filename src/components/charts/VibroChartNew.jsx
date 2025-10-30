@@ -47,7 +47,7 @@ export default function VibroChartNew({
   }, [chartData]);
 
   return (
-    <div style={{ width: "100%", height }}>
+    <div style={{ width: "100%", marginLeft: "-10px", height }}>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={data}

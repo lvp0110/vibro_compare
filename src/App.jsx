@@ -1,9 +1,10 @@
-import { Outlet, NavLink } from "react-router-dom"
-import "./App.css"
+import { Outlet, NavLink } from "react-router-dom";
+import "./App.css";
+
+const IMAGE_URL = "http://localhost:3005/api/v1/constr/black_back_ground.png";
 
 export default function App() {
-  const active = ({ isActive }) =>
-    isActive ? { fontWeight: "700" } : undefined;
+  const active = ({ isActive }) => (isActive ? { fontWeight: "700" } : undefined);
 
   return (
     <div
@@ -14,6 +15,11 @@ export default function App() {
         display: "flex",
         flexDirection: "column",
         paddingInline: 16,
+        backgroundImage: `url(${IMAGE_URL})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundColor: "#f7f7f7",
       }}
     >
       <header
@@ -25,13 +31,14 @@ export default function App() {
           top: 0,
           zIndex: 10,
           borderBottom: "1px solid #eee",
+          backdropFilter: "blur(30px)",
         }}
       >
         {/* <NavLink to="/" style={active}>
           Material
         </NavLink> */}
         <NavLink to="/vibro" style={active}>
-          Compare
+         <small style={{fontSize: 18,padding: 4, border: "solid 1px white", borderRadius: "30%"}}>VC</small> сравнение виброизоляционных материалов
         </NavLink>
       </header>
 
@@ -39,7 +46,6 @@ export default function App() {
         style={{
           flex: 1,
           display: "flex",
-          alignItems: "",
           justifyContent: "center",
           padding: "24px 0",
         }}
@@ -57,7 +63,6 @@ export default function App() {
       >
         <small>dBase© VibroCompare | </small>
         <small>
-          
           {new Date()
             .toLocaleDateString("ru-RU", {
               day: "2-digit",
