@@ -1,0 +1,66 @@
+/* Корневой контейнер */
+.app {
+    margin: 0 auto;
+    font-family: sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-inline: 16px;
+  
+    /* Фон */
+    background-image: url("https://constrtodo.ru:3005/api/v1/constr/black_back_ground.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #373434;
+  }
+  
+  /* Шапка */
+  .app__header {
+    display: flex;
+    gap: 16px;
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 1px solid #eee;
+    backdrop-filter: blur(30px);
+  }
+  
+  /* Ссылки навигации */
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    /* color: inherit; */
+    text-decoration: none;
+  }
+  
+  .nav-link.nav-link--active {
+    font-weight: 700;
+  }
+  
+  /* Бейдж VC */
+  .badge {
+    font-size: 18px;
+    padding: 4px;
+    border: 1px solid #fff;
+    border-radius: 30%;
+  }
+  
+  /* Основной контент */
+  .app__main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 24px 0;
+  }
+  
+  /* Подвал */
+  .app__footer {
+    margin-top: auto;
+    opacity: 0.7;
+    padding: 12px 0;
+    border-top: 1px solid #eee;
+  }
+  
