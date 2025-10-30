@@ -1,7 +1,7 @@
 import { Outlet, NavLink } from "react-router-dom";
 import "./App.css";
 
-const IMAGE_URL = "http://localhost:3005/api/v1/constr/black_back_ground.png";
+const IMAGE_URL = "http://constrtodo.ru:3005/api/v1/constr/black_back_ground.png";
 
 export default function App() {
   const active = ({ isActive }) => (isActive ? { fontWeight: "700" } : undefined);
