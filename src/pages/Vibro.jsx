@@ -1,4 +1,5 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import VibroChartNew from "../components/charts/VibroChartNew";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -11,6 +12,11 @@ const getThicknessUrl = (modelId) =>
   )}/sizes`;
 
 export default function Vibro() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const isInitializedFromURL = useRef(false);
+  const hasInitializedFromURL = useRef(false);
+  const prevStateRef = useRef({ brandA: "", brandB: "", valueA: "", valueB: "", thicknessA: "", thicknessB: "" });
+
   const [brands, setBrands] = useState([]);
 
   const [brandA, setBrandA] = useState("");
@@ -33,8 +39,81 @@ export default function Vibro() {
   const [thicknessB, setThicknessB] = useState("");
   const [infoA, setInfoA] = useState("");
   const [infoB, setInfoB] = useState("");
+  const [isClicked, setIsClicked] = useState(false);
 
-  const ICON_URL = "http://localhost:3005/api/v1/constr/pdf_icon.png";
+  const ICON_URL = "http://localhost:3005/api/v1/constr/share_icon_grey.svg";
+
+  // Copy URL to clipboard
+  const handleCopyUrl = async () => {
+    try {
+      // Build search params from current state
+      const params = new URLSearchParams();
+      if (brandA) params.set("brandA", brandA);
+      if (brandB) params.set("brandB", brandB);
+      if (valueA) params.set("valueA", valueA);
+      if (valueB) params.set("valueB", valueB);
+      if (thicknessA) params.set("thicknessA", thicknessA);
+      if (thicknessB) params.set("thicknessB", thicknessB);
+      
+      // Build full URL with hash and params
+      // Get base URL (everything before the hash)
+      const baseUrl = window.location.href.split('#')[0];
+      const paramsString = params.toString();
+      const fullUrl = paramsString 
+        ? `${baseUrl}#/vibro?${paramsString}`
+        : `${baseUrl}#/vibro`;
+      
+      // Copy to clipboard using modern API
+      await navigator.clipboard.writeText(fullUrl);
+      // Trigger scale animation
+      setIsClicked(true);
+      setTimeout(() => {
+        setIsClicked(false);
+      }, 500);
+    } catch (err) {
+      console.error("Failed to copy URL:", err);
+      // Fallback for older browsers or when clipboard API is not available
+      try {
+        const params = new URLSearchParams();
+        if (brandA) params.set("brandA", brandA);
+        if (brandB) params.set("brandB", brandB);
+        if (valueA) params.set("valueA", valueA);
+        if (valueB) params.set("valueB", valueB);
+        if (thicknessA) params.set("thicknessA", thicknessA);
+        if (thicknessB) params.set("thicknessB", thicknessB);
+        
+        const baseUrl = window.location.href.split('#')[0];
+        const paramsString = params.toString();
+        const fullUrl = paramsString 
+          ? `${baseUrl}#/vibro?${paramsString}`
+          : `${baseUrl}#/vibro`;
+        
+        const textArea = document.createElement("textarea");
+        textArea.value = fullUrl;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        const successful = document.execCommand("copy");
+        document.body.removeChild(textArea);
+        
+        if (successful) {
+          // Trigger scale animation
+          setIsClicked(true);
+          setTimeout(() => {
+            setIsClicked(false);
+          }, 2000);
+        } else {
+          console.error("Fallback copy failed");
+        }
+      } catch (fallbackErr) {
+        console.error("Fallback copy error:", fallbackErr);
+      }
+    }
+  };
 
   // Load brands
   useEffect(() => {
@@ -58,25 +137,187 @@ export default function Vibro() {
     return () => controller.abort();
   }, []);
 
-  // Reset branch A when brandA changes
+  // Initialize from URL parameters on mount (only once)
   useEffect(() => {
-    setValueA("");
-    setThicknessA("");
-    setThicknessAOptions([]);
-    setInfoA("");
-    setListA([]);
-    setChartData(null);
-  }, [brandA]);
+    if (brands.length === 0 || hasInitializedFromURL.current) return;
+    
+    const urlBrandA = searchParams.get("brandA");
+    const urlBrandB = searchParams.get("brandB");
+    
+    // Check if we have URL parameters
+    if (urlBrandA || urlBrandB) {
+      hasInitializedFromURL.current = true;
+      isInitializedFromURL.current = true;
+      
+      // Set brands from URL
+      if (urlBrandA) {
+        setBrandA(urlBrandA);
+      }
+      if (urlBrandB) {
+        setBrandB(urlBrandB);
+      }
+    }
+  }, [brands, searchParams]);
 
-  // Reset branch B when brandB changes
+  // Set valueA from URL when listA is loaded
   useEffect(() => {
-    setValueB("");
-    setThicknessB("");
-    setThicknessBOptions([]);
-    setInfoB("");
-    setListB([]);
-    setChartData(null);
-  }, [brandB]);
+    if (!hasInitializedFromURL.current || listA.length === 0 || !brandA) return;
+    
+    const urlBrandA = searchParams.get("brandA");
+    const urlValueA = searchParams.get("valueA");
+    
+    // Restore valueA from URL if brand matches and value is in the list
+    if (urlBrandA === brandA && urlValueA && listA.some((item) => item.Code === urlValueA) && valueA !== urlValueA) {
+      setValueA(urlValueA);
+    }
+  }, [listA, brandA, searchParams, valueA]);
+
+  // Set valueB from URL when listB is loaded
+  useEffect(() => {
+    if (!hasInitializedFromURL.current || listB.length === 0 || !brandB) return;
+    
+    const urlBrandB = searchParams.get("brandB");
+    const urlValueB = searchParams.get("valueB");
+    
+    // Restore valueB from URL if brand matches and value is in the list
+    if (urlBrandB === brandB && urlValueB && listB.some((item) => item.Code === urlValueB) && valueB !== urlValueB) {
+      setValueB(urlValueB);
+    }
+  }, [listB, brandB, searchParams, valueB]);
+
+  // Set thicknessA from URL when thicknessAOptions is loaded
+  useEffect(() => {
+    if (!hasInitializedFromURL.current || thicknessAOptions.length === 0 || !valueA) return;
+    
+    const urlValueA = searchParams.get("valueA");
+    const urlThicknessA = searchParams.get("thicknessA");
+    
+    // Restore thicknessA from URL if valueA matches and thickness is in the options
+    if (urlValueA === valueA && urlThicknessA && thicknessAOptions.some((item) => item.code === urlThicknessA) && thicknessA !== urlThicknessA) {
+      setThicknessA(urlThicknessA);
+    }
+  }, [thicknessAOptions, searchParams, thicknessA, valueA]);
+
+  // Set thicknessB from URL when thicknessBOptions is loaded
+  useEffect(() => {
+    if (!hasInitializedFromURL.current || thicknessBOptions.length === 0 || !valueB) return;
+    
+    const urlValueB = searchParams.get("valueB");
+    const urlThicknessB = searchParams.get("thicknessB");
+    
+    // Restore thicknessB from URL if valueB matches and thickness is in the options
+    if (urlValueB === valueB && urlThicknessB && thicknessBOptions.some((item) => item.code === urlThicknessB) && thicknessB !== urlThicknessB) {
+      setThicknessB(urlThicknessB);
+    }
+  }, [thicknessBOptions, searchParams, thicknessB, valueB]);
+
+  // Reset initialization flag after values are restored
+  useEffect(() => {
+    if (!isInitializedFromURL.current) return;
+    
+    const urlBrandA = searchParams.get("brandA");
+    const urlBrandB = searchParams.get("brandB");
+    const urlValueA = searchParams.get("valueA");
+    const urlValueB = searchParams.get("valueB");
+    const urlThicknessA = searchParams.get("thicknessA");
+    const urlThicknessB = searchParams.get("thicknessB");
+    
+    // Check if all values that exist in URL have been restored
+    const allRestored = 
+      (!urlBrandA || brandA === urlBrandA) &&
+      (!urlBrandB || brandB === urlBrandB) &&
+      (!urlValueA || valueA === urlValueA) &&
+      (!urlValueB || valueB === urlValueB) &&
+      (!urlThicknessA || thicknessA === urlThicknessA) &&
+      (!urlThicknessB || thicknessB === urlThicknessB);
+    
+    if (allRestored) {
+      // Reset flag after a delay to allow URL updates
+      const timer = setTimeout(() => {
+        isInitializedFromURL.current = false;
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [brandA, brandB, valueA, valueB, thicknessA, thicknessB, searchParams]);
+
+  // Update URL when state changes (except during initialization)
+  useEffect(() => {
+    // Skip URL updates during initialization
+    if (isInitializedFromURL.current) {
+      // Update ref even when skipping
+      prevStateRef.current = { brandA, brandB, valueA, valueB, thicknessA, thicknessB };
+      return;
+    }
+
+    // Check if state actually changed compared to previous state
+    const prevState = prevStateRef.current;
+    const hasChanges = 
+      brandA !== prevState.brandA ||
+      brandB !== prevState.brandB ||
+      valueA !== prevState.valueA ||
+      valueB !== prevState.valueB ||
+      thicknessA !== prevState.thicknessA ||
+      thicknessB !== prevState.thicknessB;
+
+    if (hasChanges) {
+      const newParams = new URLSearchParams();
+      if (brandA) newParams.set("brandA", brandA);
+      if (brandB) newParams.set("brandB", brandB);
+      if (valueA) newParams.set("valueA", valueA);
+      if (valueB) newParams.set("valueB", valueB);
+      if (thicknessA) newParams.set("thicknessA", thicknessA);
+      if (thicknessB) newParams.set("thicknessB", thicknessB);
+      
+      // Use replace to avoid adding to history
+      setSearchParams(newParams, { replace: true });
+      prevStateRef.current = { brandA, brandB, valueA, valueB, thicknessA, thicknessB };
+    } else {
+      // Update ref even when no changes to keep it in sync
+      prevStateRef.current = { brandA, brandB, valueA, valueB, thicknessA, thicknessB };
+    }
+  }, [brandA, brandB, valueA, valueB, thicknessA, thicknessB, setSearchParams]);
+
+  // Reset branch A when brandA changes (but not during URL restoration)
+  useEffect(() => {
+    // Don't reset if we're actively initializing from URL
+    if (isInitializedFromURL.current) return;
+    
+    // Don't reset if brand matches URL (it was set from URL)
+    const urlBrandA = searchParams.get("brandA");
+    if (urlBrandA === brandA) return;
+    
+    // Reset only if user manually changed brand (not from URL restoration)
+    const isManualChange = brandA !== "" && urlBrandA !== brandA;
+    
+    if (isManualChange && valueA !== "") {
+      setValueA("");
+      setThicknessA("");
+      setThicknessAOptions([]);
+      setInfoA("");
+      setChartData(null);
+    }
+  }, [brandA, searchParams, valueA]);
+
+  // Reset branch B when brandB changes (but not during URL restoration)
+  useEffect(() => {
+    // Don't reset if we're actively initializing from URL
+    if (isInitializedFromURL.current) return;
+    
+    // Don't reset if brand matches URL (it was set from URL)
+    const urlBrandB = searchParams.get("brandB");
+    if (urlBrandB === brandB) return;
+    
+    // Reset only if user manually changed brand (not from URL restoration)
+    const isManualChange = brandB !== "" && urlBrandB !== brandB;
+    
+    if (isManualChange && valueB !== "") {
+      setValueB("");
+      setThicknessB("");
+      setThicknessBOptions([]);
+      setInfoB("");
+      setChartData(null);
+    }
+  }, [brandB, searchParams, valueB]);
 
   // Load models for brandA
   useEffect(() => {
@@ -172,7 +413,10 @@ export default function Vibro() {
 
   // Load thickness options for valueA
   useEffect(() => {
-    setThicknessA("");
+    // Don't reset thickness if we're restoring from URL
+    if (!hasInitializedFromURL.current) {
+      setThicknessA("");
+    }
     setThicknessAOptions([]);
     if (!valueA) return;
 
@@ -195,7 +439,10 @@ export default function Vibro() {
 
   // Load thickness options for valueB
   useEffect(() => {
-    setThicknessB("");
+    // Don't reset thickness if we're restoring from URL
+    if (!hasInitializedFromURL.current) {
+      setThicknessB("");
+    }
     setThicknessBOptions([]);
     if (!valueB) return;
 
@@ -353,6 +600,33 @@ export default function Vibro() {
 
       {!loading && !error && (
         <>
+         <div style={{ position: "relative", display: "inline-block" }}>
+            <img
+              role="button"
+              src={ICON_URL}
+              alt="Копировать ссылку"
+              width={40}
+              height={40}
+              onClick={handleCopyUrl}
+              style={{ 
+                cursor: "pointer",
+                transition: "opacity 0.2s, transform 0.3s ease-in-out",
+                transform: isClicked ? "scale(1.15)" : "scale(1)",
+                opacity: 1,
+                boxShadow: "aliceblue 0px 0px 8px 3px",
+                padding: 5,
+                borderRadius: 10
+              }}
+              onMouseEnter={(e) => {
+                if (!isClicked) {
+                  e.currentTarget.style.opacity = "1";
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = "0.7";
+              }}
+            />
+          </div>
           <h2 className="vibro-title">
             Сравнение виброизоляционных материалов
           </h2>
@@ -500,13 +774,7 @@ export default function Vibro() {
                   {chartData.conclusion}
                 </Markdown>
               )}
-              {/* <img
-                role="button"
-                src={ICON_URL}
-                alt="Иконка"
-                width={40}
-                height={40}
-              /> */}
+             
 
               <div className="vibro-footer">
                 <p>Примечание:</p>
