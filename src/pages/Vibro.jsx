@@ -41,7 +41,7 @@ export default function Vibro() {
   const [infoB, setInfoB] = useState("");
   const [isClicked, setIsClicked] = useState(false);
 
-  const ICON_URL = "http://localhost:3005/api/v1/constr/share_icon_grey.svg";
+  const ICON_URL = "https://constrtodo.ru:3005/api/v1/constr/share_icon_grey.svg";
 
   // Copy URL to clipboard
   const handleCopyUrl = async () => {
