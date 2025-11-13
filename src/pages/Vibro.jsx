@@ -580,7 +580,7 @@ export default function Vibro() {
       try {
         // явно скрыть предыдущий график, пока грузится новый
         setChartData(null);
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/vibro/graph`, {
+        const res = await fetch(`${getApiUrl()}/vibro/graph`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
