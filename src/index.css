@@ -16,7 +16,7 @@ html, body { height: 100%; }
 body {
   margin: 0;
   height: 100vh;
-  background-color: #242424;
+  /* background-color: #2b2b2b; */
 }
 
 a {
@@ -37,4 +37,9 @@ h1 {
   :root {
     margin: 0px 6px;
   }
+}
+
+.recharts-legend-item-text {
+  font-size: large;
+  font-weight: 400;
 }

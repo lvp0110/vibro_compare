@@ -3,6 +3,7 @@
   width: 100%;
   max-width: 1200px;
   margin: 10px auto;
+  color: #8c8d8f;
 }
 
 .vibro-loading,
@@ -49,13 +50,16 @@
 .vibro-brand-material-grid > div:first-child .vibro-select {
   border-color: rgba(0, 123, 255, 0.7); /* Blue for A */
   background: fixed;
-  color: antiquewhite;
+  color: #8c8d8f;
+  font-size: large;
+  font-weight: 400;
 }
 
 .vibro-brand-material-grid > div:last-child .vibro-select {
   border-color: rgba(255, 0, 0, 0.7); /* Red for B */
   background: fixed;
-  color: antiquewhite;
+  color: #8c8d8f;
+  font-size: large;
 }
 
 .vibro-select:focus {
@@ -78,6 +82,10 @@
   margin-top: 16px;
 }
 
+/* .vibro-info {
+  color: #a8aaae;
+} */
+
 .vibro-chart-info {
   font-size: 14px;
   display: grid;
@@ -88,7 +96,7 @@
   padding: 3px;
 }
 .vibro-footer {
-  border: solid 1px white;
+  border: solid 1px #a8aaae;
   padding: 16px;
   display: flex;
   align-items: center;
@@ -100,7 +108,8 @@
 /* Базовый вид элементов списка */
 .vibro-select option {
   background-color: #0f172a; /* единый фон */
-  color: #f1f5f9; /* единый цвет текста */
+  color: #8c8d8f;
+  /* единый цвет текста */
   font-size: 14px;
   line-height: 1.4;
 }

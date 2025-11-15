@@ -660,7 +660,7 @@ export default function Vibro() {
                 transition: "opacity 0.2s, transform 0.3s ease-in-out",
                 transform: isClicked ? "scale(1.15)" : "scale(1)",
                 opacity: 1,
-                boxShadow: "aliceblue 0px 0px 8px 3px",
+                boxShadow: "#a8aaae 0px 0px 8px 3px",
                 padding: 5,
                 borderRadius: 10,
               }}
