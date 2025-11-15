@@ -4,7 +4,7 @@ import "./App.css";
 export default function App() {
   return (
     <div className="app">
-      <header className="app__header">
+      {/* <header className="app__header">
         <NavLink
           to="/vibro"
           className={({ isActive }) =>
@@ -14,7 +14,7 @@ export default function App() {
           <small className="badge">VC</small> сравнение виброизоляционных
           материалов
         </NavLink>
-      </header>
+      </header> */}
 
       <main className="app__main">
         <Outlet />
