@@ -10,7 +10,8 @@ createRoot(document.getElementById('root')).render(
     <HashRouter>
       <Routes>
         <Route path='/' element={<App />}>
-          <Route path='/vibro' element={<Vibro />} />
+          <Route index element={<Vibro />} />
+          <Route path='vibro' element={<Vibro />} />
         </Route>
       </Routes>
     </HashRouter>
