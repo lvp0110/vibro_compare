@@ -56,7 +56,7 @@ h1 {
 }
 
 table {
-  background-color: var(--table-bg-color, #373737);
+  background-color: var(--table-bg-color, #373737) !important;
   font-weight: 700;
   padding: 4px;
   transition: background-color 0.3s ease;

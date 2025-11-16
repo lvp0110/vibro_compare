@@ -29,11 +29,25 @@ export function useTheme() {
                            parentHtml.className.match(/(?:^|\s)(dark|light)(?:\s|$)/)?.[1];
           
           if (bodyTheme === 'dark' || bodyTheme === 'light') {
-            setTheme(bodyTheme);
+            console.log('Theme detected from body:', bodyTheme);
+            setTheme(prevTheme => {
+              if (prevTheme !== bodyTheme) {
+                console.log('Theme changed from', prevTheme, 'to', bodyTheme);
+                return bodyTheme;
+              }
+              return prevTheme;
+            });
             return true;
           }
           if (htmlTheme === 'dark' || htmlTheme === 'light') {
-            setTheme(htmlTheme);
+            console.log('Theme detected from html:', htmlTheme);
+            setTheme(prevTheme => {
+              if (prevTheme !== htmlTheme) {
+                console.log('Theme changed from', prevTheme, 'to', htmlTheme);
+                return htmlTheme;
+              }
+              return prevTheme;
+            });
             return true;
           }
 
@@ -49,7 +63,14 @@ export function useTheme() {
               const b = parseInt(rgb[2]);
               const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
               const detectedTheme = luminance < 0.5 ? 'dark' : 'light';
-              setTheme(detectedTheme);
+              console.log('Theme detected from body bg color:', detectedTheme, 'luminance:', luminance, 'rgb:', r, g, b);
+              setTheme(prevTheme => {
+                if (prevTheme !== detectedTheme) {
+                  console.log('Theme changed from', prevTheme, 'to', detectedTheme);
+                  return detectedTheme;
+                }
+                return prevTheme;
+              });
               return true;
             }
           }
@@ -66,7 +87,14 @@ export function useTheme() {
               const b = parseInt(rgb[2]);
               const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
               const detectedTheme = luminance < 0.5 ? 'dark' : 'light';
-              setTheme(detectedTheme);
+              console.log('Theme detected from html bg color:', detectedTheme, 'luminance:', luminance, 'rgb:', r, g, b);
+              setTheme(prevTheme => {
+                if (prevTheme !== detectedTheme) {
+                  console.log('Theme changed from', prevTheme, 'to', detectedTheme);
+                  return detectedTheme;
+                }
+                return prevTheme;
+              });
               return true;
             }
           }

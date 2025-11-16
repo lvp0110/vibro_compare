@@ -10,6 +10,58 @@ export default function App() {
   useEffect(() => {
     const tableBgColor = theme === 'dark' ? '#373737' : '#EBEBEB';
     document.documentElement.style.setProperty('--table-bg-color', tableBgColor);
+    
+    // Apply directly to all existing tables
+    const applyTableStyles = () => {
+      const tables = document.querySelectorAll('table');
+      let appliedCount = 0;
+      tables.forEach(table => {
+        const currentBg = window.getComputedStyle(table).backgroundColor;
+        table.style.setProperty('background-color', tableBgColor, 'important');
+        appliedCount++;
+      });
+      if (appliedCount > 0) {
+        console.log('Applied table styles:', appliedCount, 'tables, color:', tableBgColor);
+      }
+    };
+    
+    // Apply immediately
+    applyTableStyles();
+    
+    // Also apply after a short delay to catch dynamically rendered tables
+    const timeoutId = setTimeout(() => {
+      applyTableStyles();
+    }, 100);
+    
+    // Watch for new tables being added (e.g., from Markdown rendering)
+    const observer = new MutationObserver((mutations) => {
+      let shouldApply = false;
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1) { // Element node
+            if (node.tagName === 'TABLE' || node.querySelector?.('table')) {
+              shouldApply = true;
+            }
+          }
+        });
+      });
+      if (shouldApply) {
+        // Small delay to ensure styles are applied after rendering
+        setTimeout(applyTableStyles, 50);
+      }
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+    
+    console.log('Theme updated:', theme, 'Table BG:', tableBgColor, 'Tables found:', document.querySelectorAll('table').length);
+    
+    return () => {
+      clearTimeout(timeoutId);
+      observer.disconnect();
+    };
   }, [theme]);
 
   return (
