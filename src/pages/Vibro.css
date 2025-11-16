@@ -91,6 +91,9 @@
   display: grid;
   margin-right: 40px;
 }
+.vibro-chart-info table {
+  background-color: var(--table-bg-color, #373737);
+}
 .vibro-chart-info td {
   border: solid 1px #94a3b8;
   padding: 3px;

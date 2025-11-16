@@ -11,7 +11,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-html, body { height: 100%; }
+html,
+body {
+  height: 100%;
+}
 
 body {
   margin: 0;
@@ -19,7 +22,10 @@ body {
   /* background-color: #2b2b2b; */
 }
 
-a, html, body, #root {
+a,
+html,
+body,
+#root {
   background: transparent !important;
   background-color: transparent !important;
 }
@@ -47,4 +53,14 @@ h1 {
 .recharts-legend-item-text {
   font-size: large;
   font-weight: 400;
+}
+
+table {
+  background-color: var(--table-bg-color, #373737);
+  font-weight: 700;
+  padding: 4px;
+  transition: background-color 0.3s ease;
+  @media (width<500px){
+    padding: 0;
+  }
 }

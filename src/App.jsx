@@ -1,7 +1,17 @@
+import { useEffect } from "react";
 import { Outlet, NavLink } from "react-router-dom";
+import { useTheme } from "./hooks/useTheme";
 import "./App.css";
 
 export default function App() {
+  const theme = useTheme();
+
+  // Set CSS variable for table background color based on theme
+  useEffect(() => {
+    const tableBgColor = theme === 'dark' ? '#373737' : '#EBEBEB';
+    document.documentElement.style.setProperty('--table-bg-color', tableBgColor);
+  }, [theme]);
+
   return (
     <div className="app">
       {/* <header className="app__header">
