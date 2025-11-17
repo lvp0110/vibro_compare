@@ -75,10 +75,34 @@ export function useTheme() {
 
     window.addEventListener('message', handleMessage);
 
+    // Expose test function to window for manual testing
+    // Usage in console: window.__setIframeTheme('dark') or window.__setIframeTheme('light')
+    window.__setIframeTheme = (newTheme) => {
+      if (newTheme === 'dark' || newTheme === 'light') {
+        console.log('[Theme Detection] Manual theme set:', newTheme);
+        hasReceivedThemeRef.current = true;
+        setTheme(newTheme);
+      } else {
+        console.warn('[Theme Detection] Invalid theme. Use "dark" or "light"');
+      }
+    };
+
     // Request theme from parent on mount and periodically
     if (window.self !== window.top) {
       // Initial request
       requestThemeFromParent();
+      
+      // Show helpful message if no response after a delay
+      setTimeout(() => {
+        if (!hasReceivedThemeRef.current) {
+          console.warn(
+            '[Theme Detection] No theme received from parent. ' +
+            'Please configure parent app to send theme messages. ' +
+            'See IFRAME_THEME_INTEGRATION.md for instructions. ' +
+            'For testing, use: window.__setIframeTheme("dark") or window.__setIframeTheme("light")'
+          );
+        }
+      }, 3000);
       
       // Request periodically to catch theme changes
       // Interval is set to 5 seconds - parent app should respond quickly on first request
@@ -93,6 +117,7 @@ export function useTheme() {
       if (requestTimeoutRef.current) {
         clearInterval(requestTimeoutRef.current);
       }
+      delete window.__setIframeTheme;
     };
   }, []);
 

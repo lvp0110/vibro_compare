@@ -159,8 +159,35 @@ window.addEventListener('message', (event) => {
 
 ## Тестирование
 
+### Тестирование из консоли iframe
+
+Вы можете протестировать переключение темы прямо из консоли браузера iframe:
+
+```javascript
+// В консоли iframe (откройте DevTools на странице iframe):
+window.__setIframeTheme('dark');  // Установить темную тему
+window.__setIframeTheme('light'); // Установить светлую тему
+```
+
+### Тестирование из консоли родительского приложения
+
+Вы можете отправить сообщение о теме из консоли родительского приложения:
+
+```javascript
+// В консоли родительского приложения:
+const iframe = document.querySelector('iframe[src*="vibro"]');
+if (iframe?.contentWindow) {
+  iframe.contentWindow.postMessage({ theme: 'dark' }, '*');
+  // или
+  iframe.contentWindow.postMessage({ theme: 'light' }, '*');
+}
+```
+
+### Проверка работы
+
 После настройки проверьте в консоли браузера iframe:
 - Должны появиться сообщения: `[Theme Detection] Requested theme from parent`
 - При отправке темы: `[Theme Detection] Received theme from parent: dark/light`
 - При изменении темы: `[Theme Detection] Theme changed from dark to light`
+- Если тема не получена через 3 секунды, появится предупреждение с инструкциями
 
