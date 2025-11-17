@@ -28,6 +28,13 @@ export function useTheme() {
           const htmlTheme = parentHtml.getAttribute('data-theme') || 
                            parentHtml.className.match(/(?:^|\s)(dark|light)(?:\s|$)/)?.[1];
           
+          // Debug logging (only log when theme is found or on first check)
+          if (bodyTheme || htmlTheme || !intervalRef.current) {
+            console.log('[Theme Detection] Body classes:', parentBody.className, 'data-theme:', parentBody.getAttribute('data-theme'));
+            console.log('[Theme Detection] HTML classes:', parentHtml.className, 'data-theme:', parentHtml.getAttribute('data-theme'));
+            console.log('[Theme Detection] Extracted bodyTheme:', bodyTheme, 'htmlTheme:', htmlTheme);
+          }
+          
           if (bodyTheme === 'dark' || bodyTheme === 'light') {
             console.log('Theme detected from body:', bodyTheme);
             setTheme(prevTheme => {
@@ -100,11 +107,17 @@ export function useTheme() {
           }
         } catch (e) {
           // CORS or other error, return false
+          if (!intervalRef.current) {
+            console.log('[Theme Detection] Error accessing parent:', e.message);
+          }
           return false;
         }
       }
     } catch (e) {
       // Error accessing parent
+      if (!intervalRef.current) {
+        console.log('[Theme Detection] Error:', e.message);
+      }
       return false;
     }
     return false;
