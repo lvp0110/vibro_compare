@@ -82,14 +82,13 @@
   margin-top: 16px;
 }
 
-/* .vibro-info {
-  color: #a8aaae;
-} */
-
 .vibro-chart-info {
   font-size: 14px;
   display: grid;
   margin-right: 40px;
+}
+.vibro-chart-info table {
+  background-color: var(--table-bg-color, #373737) !important;
 }
 .vibro-chart-info td {
   border: solid 1px #94a3b8;

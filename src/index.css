@@ -11,7 +11,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-html, body { height: 100%; }
+html,
+body {
+  height: 100%;
+}
 
 body {
   margin: 0;
@@ -19,7 +22,10 @@ body {
   /* background-color: #2b2b2b; */
 }
 
-a, html, body, #root {
+a,
+html,
+body,
+#root {
   background: transparent !important;
   background-color: transparent !important;
 }
@@ -50,10 +56,11 @@ h1 {
 }
 
 table {
-  background: #ebebebd2;
+  background-color: var(--table-bg-color, #373737) !important;
   font-weight: 700;
   padding: 4px;
-  @media (width < 500px){
-    padding: 0px;
+  transition: background-color 0.3s ease;
+  @media (width<500px){
+    padding: 0;
   }
 }
