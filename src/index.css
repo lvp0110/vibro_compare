@@ -48,3 +48,12 @@ h1 {
   font-size: large;
   font-weight: 400;
 }
+
+table {
+  background: #ebebebd2;
+  font-weight: 700;
+  padding: 4px;
+  @media (width < 500px){
+    padding: 0px;
+  }
+}
