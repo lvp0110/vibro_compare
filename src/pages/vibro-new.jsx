@@ -212,6 +212,7 @@ export default function Vibro() {
     setValueA(value);
     setThicknessA("");
     setThicknessAOptions([]);
+    setInfoA("");
 
     const res = await fetch(getThicknessUrl(value), {
       headers: { Accept: "application/json" },
