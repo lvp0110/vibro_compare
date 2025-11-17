@@ -20,6 +20,12 @@ export function useTheme() {
   const [theme, setTheme] = useState('dark'); // default to dark
   const requestTimeoutRef = useRef(null);
   const hasReceivedThemeRef = useRef(false);
+  const setThemeRef = useRef(setTheme);
+
+  // Keep setTheme ref up to date
+  useEffect(() => {
+    setThemeRef.current = setTheme;
+  }, [setTheme]);
 
   // Request theme from parent application
   const requestThemeFromParent = () => {
@@ -77,15 +83,18 @@ export function useTheme() {
 
     // Expose test function to window for manual testing
     // Usage in console: window.__setIframeTheme('dark') or window.__setIframeTheme('light')
-    window.__setIframeTheme = (newTheme) => {
-      if (newTheme === 'dark' || newTheme === 'light') {
-        console.log('[Theme Detection] Manual theme set:', newTheme);
-        hasReceivedThemeRef.current = true;
-        setTheme(newTheme);
-      } else {
-        console.warn('[Theme Detection] Invalid theme. Use "dark" or "light"');
-      }
-    };
+    if (typeof window !== 'undefined') {
+      window.__setIframeTheme = (newTheme) => {
+        if (newTheme === 'dark' || newTheme === 'light') {
+          console.log('[Theme Detection] Manual theme set:', newTheme);
+          hasReceivedThemeRef.current = true;
+          setThemeRef.current(newTheme);
+        } else {
+          console.warn('[Theme Detection] Invalid theme. Use "dark" or "light"');
+        }
+      };
+      console.log('[Theme Detection] Test function available: window.__setIframeTheme("dark") or window.__setIframeTheme("light")');
+    }
 
     // Request theme from parent on mount and periodically
     if (window.self !== window.top) {
@@ -117,7 +126,7 @@ export function useTheme() {
       if (requestTimeoutRef.current) {
         clearInterval(requestTimeoutRef.current);
       }
-      delete window.__setIframeTheme;
+      // Don't delete the function - keep it available for testing
     };
   }, []);
 
