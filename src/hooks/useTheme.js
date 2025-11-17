@@ -42,7 +42,31 @@ if (typeof window !== 'undefined') {
 }
 
 export function useTheme() {
-  const [theme, setTheme] = useState('dark'); // default to dark
+  // Check URL parameter first
+  const getThemeFromURL = () => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlTheme = urlParams.get('theme');
+      if (urlTheme === 'dark' || urlTheme === 'light') {
+        return urlTheme;
+      }
+      // Also check hash parameters (for HashRouter)
+      const hash = window.location.hash;
+      const hashMatch = hash.match(/[?&]theme=([^&]+)/);
+      if (hashMatch) {
+        const hashTheme = hashMatch[1];
+        if (hashTheme === 'dark' || hashTheme === 'light') {
+          return hashTheme;
+        }
+      }
+    }
+    return null;
+  };
+
+  const [theme, setTheme] = useState(() => {
+    const urlTheme = getThemeFromURL();
+    return urlTheme || 'dark'; // default to dark
+  });
   const requestTimeoutRef = useRef(null);
   const hasReceivedThemeRef = useRef(false);
 
@@ -51,6 +75,35 @@ export function useTheme() {
     themeManager.setTheme = setTheme;
     themeManager.hasReceivedTheme = hasReceivedThemeRef.current;
   }, [setTheme]);
+
+  // Watch for URL parameter changes
+  useEffect(() => {
+    const checkURLTheme = () => {
+      const urlTheme = getThemeFromURL();
+      if (urlTheme && urlTheme !== theme) {
+        console.log('[Theme Detection] Theme from URL:', urlTheme);
+        setTheme(urlTheme);
+        hasReceivedThemeRef.current = true;
+      }
+    };
+
+    // Check on mount
+    checkURLTheme();
+
+    // Listen for URL changes (for HashRouter)
+    const handleHashChange = () => {
+      checkURLTheme();
+    };
+    window.addEventListener('hashchange', handleHashChange);
+
+    // Also check periodically (in case parent changes URL)
+    const urlCheckInterval = setInterval(checkURLTheme, 1000);
+
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+      clearInterval(urlCheckInterval);
+    };
+  }, [theme]);
 
   // Request theme from parent application
   const requestThemeFromParent = () => {
