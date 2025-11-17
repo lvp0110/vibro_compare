@@ -44,7 +44,7 @@ h1 {
   line-height: 1.1;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 500px) {
   :root {
     margin: 0px 6px;
   }
@@ -56,10 +56,9 @@ h1 {
 }
 
 table {
-  background-color: var(--table-bg-color, #373737) !important;
+  background-color: #EBEBEB;
   font-weight: 700;
   padding: 4px;
-  transition: background-color 0.3s ease;
   @media (width<500px){
     padding: 0;
   }
