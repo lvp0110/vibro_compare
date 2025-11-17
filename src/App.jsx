@@ -1,38 +1,14 @@
-import { useEffect, useState } from "react";
-import { Outlet, NavLink, useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
+import { Outlet, NavLink } from "react-router-dom";
 import { useTheme } from "./hooks/useTheme";
 import "./App.css";
 
 export default function App() {
   const theme = useTheme();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [localTheme, setLocalTheme] = useState(theme);
-
-  // Sync local theme with hook theme
-  useEffect(() => {
-    setLocalTheme(theme);
-  }, [theme]);
-
-  // Manual theme toggle function
-  const toggleTheme = () => {
-    const newTheme = localTheme === 'dark' ? 'light' : 'dark';
-    setLocalTheme(newTheme);
-    
-    // Update URL parameter
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set('theme', newTheme);
-    setSearchParams(newParams, { replace: true });
-    
-    // Also update through theme manager if available
-    if (window.__setIframeTheme) {
-      window.__setIframeTheme(newTheme);
-    }
-  };
 
   // Set CSS variable for table background color based on theme
   useEffect(() => {
-    const currentTheme = localTheme || theme;
-    const tableBgColor = currentTheme === 'dark' ? '#373737' : '#EBEBEB';
+    const tableBgColor = theme === 'dark' ? '#373737' : '#EBEBEB';
     document.documentElement.style.setProperty('--table-bg-color', tableBgColor);
     
     // Apply directly to all existing tables
@@ -80,13 +56,13 @@ export default function App() {
       subtree: true
     });
     
-    console.log('Theme updated:', currentTheme, 'Table BG:', tableBgColor, 'Tables found:', document.querySelectorAll('table').length);
+    console.log('Theme updated:', theme, 'Table BG:', tableBgColor, 'Tables found:', document.querySelectorAll('table').length);
     
     return () => {
       clearTimeout(timeoutId);
       observer.disconnect();
     };
-  }, [localTheme, theme]);
+  }, [theme]);
 
   return (
     <div className="app">
@@ -101,25 +77,6 @@ export default function App() {
           материалов
         </NavLink>
       </header> */}
-
-      {/* Theme toggle button */}
-      <div style={{
-        position: 'fixed',
-        top: '10px',
-        right: '10px',
-        zIndex: 1000,
-        background: localTheme === 'dark' ? '#373737' : '#EBEBEB',
-        border: `2px solid ${localTheme === 'dark' ? '#EBEBEB' : '#373737'}`,
-        borderRadius: '8px',
-        padding: '8px 12px',
-        cursor: 'pointer',
-        fontSize: '12px',
-        color: localTheme === 'dark' ? '#EBEBEB' : '#373737',
-        fontWeight: 'bold',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-      }} onClick={toggleTheme} title="Переключить тему">
-        {localTheme === 'dark' ? '☀️' : '🌙'} {localTheme === 'dark' ? 'Светлая' : 'Темная'}
-      </div>
 
       <main className="app__main">
         <Outlet />

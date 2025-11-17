@@ -4,13 +4,94 @@
 
 ## Проблема
 
-Из-за ограничений CORS (Cross-Origin Resource Sharing) iframe не может напрямую получить доступ к DOM родительского окна. Поэтому для определения темы используется PostMessage API.
+Из-за ограничений CORS (Cross-Origin Resource Sharing) iframe не может напрямую получить доступ к DOM родительского окна. 
 
-## Решение
+## Решение (рекомендуется)
 
-Родительское приложение должно отправлять сообщения о текущей теме в iframe.
+**Используйте URL параметр `theme`** - это самый простой и надежный способ.
 
-## Вариант 1: Отправка темы при переключении
+Родительское приложение должно изменять URL iframe при переключении темы, добавляя параметр `theme=dark` или `theme=light`.
+
+## Вариант 1: URL параметр (РЕКОМЕНДУЕТСЯ)
+
+Самый простой способ - изменять URL iframe при переключении темы в родительском приложении.
+
+### Пример кода для родительского приложения:
+
+```javascript
+// Функция для обновления URL iframe с темой
+function updateIframeTheme(theme) {
+  const iframe = document.querySelector('iframe[src*="vibro"]');
+  if (iframe) {
+    const currentSrc = iframe.src;
+    const baseUrl = currentSrc.split('?')[0].split('#')[0];
+    const hash = currentSrc.includes('#') ? currentSrc.split('#')[1] : '';
+    
+    // Обновить или добавить параметр theme
+    let newHash = hash || '/vibro';
+    if (newHash.includes('?')) {
+      // Заменить существующий параметр theme
+      newHash = newHash.replace(/[?&]theme=[^&]*/, '');
+      newHash += (newHash.includes('?') ? '&' : '?') + `theme=${theme}`;
+    } else {
+      newHash += `?theme=${theme}`;
+    }
+    
+    iframe.src = `${baseUrl}#${newHash}`;
+  }
+}
+
+// Вызывать при переключении темы в родительском приложении:
+function onThemeToggle() {
+  const newTheme = /* ваша логика определения новой темы */ 'light'; // или 'dark'
+  updateIframeTheme(newTheme);
+}
+```
+
+### Или проще - при создании iframe:
+
+```html
+<!-- Для темной темы -->
+<iframe src="https://vibro.constrtodo.ru:3445/#/vibro?theme=dark"></iframe>
+
+<!-- Для светлой темы -->
+<iframe src="https://vibro.constrtodo.ru:3445/#/vibro?theme=light"></iframe>
+```
+
+### React пример:
+
+```jsx
+function ParentApp() {
+  const [theme, setTheme] = useState('dark');
+  const iframeRef = useRef(null);
+  
+  useEffect(() => {
+    if (iframeRef.current) {
+      const currentSrc = iframeRef.current.src;
+      const baseUrl = currentSrc.split('#')[0];
+      iframeRef.current.src = `${baseUrl}#/vibro?theme=${theme}`;
+    }
+  }, [theme]);
+  
+  return (
+    <div>
+      <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+        Переключить тему
+      </button>
+      <iframe 
+        ref={iframeRef}
+        src="https://vibro.constrtodo.ru:3445/#/vibro?theme=dark"
+      />
+    </div>
+  );
+}
+```
+
+## Вариант 2: PostMessage API
+
+Родительское приложение может отправлять сообщения о текущей теме в iframe.
+
+### Отправка темы при переключении
 
 Добавьте код в родительское приложение, который будет отправлять сообщение о теме при её изменении:
 
