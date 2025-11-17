@@ -16,15 +16,40 @@ import { useState, useEffect, useRef } from 'react';
  *   }
  * });
  */
+
+// Global theme manager for manual testing
+const themeManager = {
+  setTheme: null,
+  hasReceivedTheme: false
+};
+
+// Initialize test function immediately
+if (typeof window !== 'undefined') {
+  window.__setIframeTheme = (newTheme) => {
+    if (newTheme === 'dark' || newTheme === 'light') {
+      if (themeManager.setTheme) {
+        console.log('[Theme Detection] Manual theme set:', newTheme);
+        themeManager.hasReceivedTheme = true;
+        themeManager.setTheme(newTheme);
+      } else {
+        console.warn('[Theme Detection] Theme manager not ready yet. Please wait for page to load.');
+      }
+    } else {
+      console.warn('[Theme Detection] Invalid theme. Use "dark" or "light"');
+    }
+  };
+  console.log('[Theme Detection] Test function initialized: window.__setIframeTheme("dark") or window.__setIframeTheme("light")');
+}
+
 export function useTheme() {
   const [theme, setTheme] = useState('dark'); // default to dark
   const requestTimeoutRef = useRef(null);
   const hasReceivedThemeRef = useRef(false);
-  const setThemeRef = useRef(setTheme);
 
-  // Keep setTheme ref up to date
+  // Register setTheme in global manager
   useEffect(() => {
-    setThemeRef.current = setTheme;
+    themeManager.setTheme = setTheme;
+    themeManager.hasReceivedTheme = hasReceivedThemeRef.current;
   }, [setTheme]);
 
   // Request theme from parent application
@@ -81,20 +106,9 @@ export function useTheme() {
 
     window.addEventListener('message', handleMessage);
 
-    // Expose test function to window for manual testing
-    // Usage in console: window.__setIframeTheme('dark') or window.__setIframeTheme('light')
-    if (typeof window !== 'undefined') {
-      window.__setIframeTheme = (newTheme) => {
-        if (newTheme === 'dark' || newTheme === 'light') {
-          console.log('[Theme Detection] Manual theme set:', newTheme);
-          hasReceivedThemeRef.current = true;
-          setThemeRef.current(newTheme);
-        } else {
-          console.warn('[Theme Detection] Invalid theme. Use "dark" or "light"');
-        }
-      };
-      console.log('[Theme Detection] Test function available: window.__setIframeTheme("dark") or window.__setIframeTheme("light")');
-    }
+    // Update global manager
+    themeManager.setTheme = setTheme;
+    themeManager.hasReceivedTheme = hasReceivedThemeRef.current;
 
     // Request theme from parent on mount and periodically
     if (window.self !== window.top) {
