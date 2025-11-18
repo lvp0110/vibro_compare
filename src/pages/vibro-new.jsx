@@ -11,18 +11,21 @@ const getThicknessUrl = (modelId) =>
   `${getApiUrl()}/vibro/models/${encodeURIComponent(modelId)}/sizes`;
 
 export default function Vibro() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [brands, setBrands] = useState([]);
 
-  const [items, setItems] = useState([]);
+  const [brandA, setBrandA] = useState(searchParams.get("brandA") || "");
+  const [brandB, setBrandB] = useState(searchParams.get("brandB") || "");
 
-  const [brandA, setBrandA] = useState("");
-  const [brandB, setBrandB] = useState("");
+  const [valueA, setValueA] = useState(searchParams.get("valueA") || "");
+  const [valueB, setValueB] = useState(searchParams.get("valueB") || "");
 
-  const [valueA, setValueA] = useState("");
-  const [valueB, setValueB] = useState("");
-
-  const [thicknessA, setThicknessA] = useState("");
-  const [thicknessB, setThicknessB] = useState("");
+  const [thicknessA, setThicknessA] = useState(
+    searchParams.get("thicknessA") || ""
+  );
+  const [thicknessB, setThicknessB] = useState(
+    searchParams.get("thicknessB") || ""
+  );
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -37,6 +40,7 @@ export default function Vibro() {
   const [infoA, setInfoA] = useState("");
   const [infoB, setInfoB] = useState("");
   const [isClicked, setIsClicked] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const ICON_URL = `${getApiUrl()}/api/v1/constr/share_icon_grey.svg`;
 
@@ -111,6 +115,30 @@ export default function Vibro() {
       }
     }
   };
+
+  // Sync state to URL params
+  useEffect(() => {
+    if (!isInitialized) return;
+
+    const params = new URLSearchParams();
+    if (brandA) params.set("brandA", brandA);
+    if (brandB) params.set("brandB", brandB);
+    if (valueA) params.set("valueA", valueA);
+    if (valueB) params.set("valueB", valueB);
+    if (thicknessA) params.set("thicknessA", thicknessA);
+    if (thicknessB) params.set("thicknessB", thicknessB);
+
+    setSearchParams(params, { replace: true });
+  }, [
+    brandA,
+    brandB,
+    valueA,
+    valueB,
+    thicknessA,
+    thicknessB,
+    isInitialized,
+    setSearchParams,
+  ]);
 
   // Load brands
   useEffect(() => {
@@ -266,6 +294,88 @@ export default function Vibro() {
     setInfoB(json.data || "");
   };
 
+  // Initialize from URL params
+  useEffect(() => {
+    if (brands.length === 0 || isInitialized) return;
+
+    const initFromUrl = async () => {
+      const urlBrandA = searchParams.get("brandA");
+      const urlBrandB = searchParams.get("brandB");
+      const urlValueA = searchParams.get("valueA");
+      const urlValueB = searchParams.get("valueB");
+      const urlThicknessA = searchParams.get("thicknessA");
+      const urlThicknessB = searchParams.get("thicknessB");
+
+      try {
+        // Load data for A
+        if (urlBrandA) {
+          const resA = await fetch(`${getApiUrl()}/vibro/models/${urlBrandA}`, {
+            headers: { Accept: "application/json" },
+          });
+          const responseA = await resA.json();
+          setListA(responseA.data || []);
+
+          if (urlValueA) {
+            const resThicknessA = await fetch(getThicknessUrl(urlValueA), {
+              headers: { Accept: "application/json" },
+            });
+            const jsonThicknessA = await resThicknessA.json();
+            setThicknessAOptions(jsonThicknessA.data || []);
+
+            if (urlThicknessA) {
+              const thickness = jsonThicknessA.data?.find(
+                (item) => item.code === urlThicknessA
+              )?.thickness;
+              if (thickness) {
+                const resInfoA = await fetch(
+                  `${getApiUrl()}/vibro/material/model/${urlValueA}/thickness/${thickness}`
+                );
+                const jsonInfoA = await resInfoA.json();
+                setInfoA(jsonInfoA.data || "");
+              }
+            }
+          }
+        }
+
+        // Load data for B
+        if (urlBrandB) {
+          const resB = await fetch(`${getApiUrl()}/vibro/models/${urlBrandB}`, {
+            headers: { Accept: "application/json" },
+          });
+          const responseB = await resB.json();
+          setListB(responseB.data || []);
+
+          if (urlValueB) {
+            const resThicknessB = await fetch(getThicknessUrl(urlValueB), {
+              headers: { Accept: "application/json" },
+            });
+            const jsonThicknessB = await resThicknessB.json();
+            setThicknessBOptions(jsonThicknessB.data || []);
+
+            if (urlThicknessB) {
+              const thickness = jsonThicknessB.data?.find(
+                (item) => item.code === urlThicknessB
+              )?.thickness;
+              if (thickness) {
+                const resInfoB = await fetch(
+                  `${getApiUrl()}/vibro/material/model/${urlValueB}/thickness/${thickness}`
+                );
+                const jsonInfoB = await resInfoB.json();
+                setInfoB(jsonInfoB.data || "");
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Error initializing from URL:", e);
+      } finally {
+        setIsInitialized(true);
+      }
+    };
+
+    initFromUrl();
+  }, [brands, isInitialized, searchParams]);
+
   useEffect(() => {
     if (!(thicknessA && thicknessB)) {
       setChartData(null);
@@ -294,7 +404,7 @@ export default function Vibro() {
         if (e.name !== "AbortError") console.error(e);
       }
     })();
-  }, [thicknessA, thicknessB]);
+  }, [thicknessA, thicknessB, valueA, valueB]);
 
   return (
     <div className="vibro-container">
