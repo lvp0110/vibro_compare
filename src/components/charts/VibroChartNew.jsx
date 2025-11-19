@@ -111,6 +111,7 @@ export default function VibroChartNew({
             baseValue={0}
             connectNulls
             isAnimationActive={false}
+            legendType="none"
             name=""
           />
 
@@ -124,6 +125,7 @@ export default function VibroChartNew({
             baseValue={0}
             connectNulls
             isAnimationActive={false}
+            legendType="none"
             name=""
           />
           <Area
