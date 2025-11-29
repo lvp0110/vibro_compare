@@ -74,6 +74,68 @@
   margin-top: 8px;
 }
 
+.vibro-manual-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.vibro-manual-input {
+  display: block;
+  padding: 8px 40px 8px 8px;
+  width: 100%;
+  height: 22px;
+  border: 2px solid transparent;
+  transition: border-color 0.3s ease;
+  font-size: large;
+  font-weight: 400;
+  color: #8c8d8f;
+  background: fixed;
+}
+
+/* Стили для input в колонке A */
+.vibro-brand-material-grid > div:first-child .vibro-manual-input {
+  border-color: rgba(0, 123, 255, 0.7);
+}
+
+/* Стили для input в колонке B */
+.vibro-brand-material-grid > div:last-child .vibro-manual-input {
+  border-color: rgba(255, 0, 0, 0.7);
+}
+
+.vibro-manual-input:focus {
+  outline: none;
+  border-color: rgba(0, 123, 255, 1);
+}
+
+.vibro-manual-submit {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #8c8d8f;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.vibro-manual-submit:hover:not(:disabled) {
+  color: #4a5568;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.vibro-manual-submit:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 .vibro-chart-grid {
   display: grid;
   grid-template-columns: 60% 1fr;
