@@ -575,6 +575,15 @@ export default function Vibro() {
       return;
     }
 
+    // Преобразуем коды в фактические значения толщины
+    const actualThicknessA = thicknessAOptions.find(
+      (item) => item.code === thicknessA
+    )?.thickness || thicknessA;
+    
+    const actualThicknessB = thicknessBOptions.find(
+      (item) => item.code === thicknessB
+    )?.thickness || thicknessB;
+
     const controller = new AbortController();
     (async () => {
       try {
@@ -587,8 +596,8 @@ export default function Vibro() {
             Accept: "application/json",
           },
           body: JSON.stringify([
-            { model_code: valueA, thickness: thicknessA },
-            { model_code: valueB, thickness: thicknessB },
+            { model_code: valueA, thickness: actualThicknessA },
+            { model_code: valueB, thickness: actualThicknessB },
           ]),
           signal: controller.signal,
         });
@@ -601,7 +610,7 @@ export default function Vibro() {
     })();
 
     return () => controller.abort();
-  }, [valueA, valueB, thicknessA, thicknessB]);
+  }, [valueA, valueB, thicknessA, thicknessB, thicknessAOptions, thicknessBOptions]);
 
   const ignoredKeys = useMemo(() => new Set(["__typename"]), []);
   const isObject = (v) => v !== null && typeof v === "object";

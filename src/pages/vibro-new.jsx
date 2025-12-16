@@ -526,8 +526,32 @@ export default function Vibro() {
 
   useEffect(() => {
     // Определяем реальные значения толщины (если "manual", используем введенное значение)
-    const actualThicknessA = thicknessA === "manual" ? manualThicknessA : thicknessA;
-    const actualThicknessB = thicknessB === "manual" ? manualThicknessB : thicknessB;
+    // Если выбрана опция из списка, преобразуем код в фактическое значение толщины
+    let actualThicknessA;
+    if (thicknessA === "manual") {
+      actualThicknessA = manualThicknessA;
+    } else if (thicknessA) {
+      const thicknessOption = thicknessAOptions.find((item) => item.code === thicknessA);
+      if (!thicknessOption) {
+        // Если опция не найдена, не отправляем запрос
+        setChartData(null);
+        return;
+      }
+      actualThicknessA = thicknessOption.thickness;
+    }
+    
+    let actualThicknessB;
+    if (thicknessB === "manual") {
+      actualThicknessB = manualThicknessB;
+    } else if (thicknessB) {
+      const thicknessOption = thicknessBOptions.find((item) => item.code === thicknessB);
+      if (!thicknessOption) {
+        // Если опция не найдена, не отправляем запрос
+        setChartData(null);
+        return;
+      }
+      actualThicknessB = thicknessOption.thickness;
+    }
     
     if (!(actualThicknessA && actualThicknessB)) {
       setChartData(null);
@@ -538,18 +562,35 @@ export default function Vibro() {
       try {
         // явно скрыть предыдущий график, пока грузится новый
         setChartData(null);
+        
+        // Преобразуем значения толщины в числа, если они числовые строки
+        const thicknessValueA = actualThicknessA && !isNaN(actualThicknessA) && actualThicknessA !== ""
+          ? Number(actualThicknessA)
+          : actualThicknessA;
+        const thicknessValueB = actualThicknessB && !isNaN(actualThicknessB) && actualThicknessB !== ""
+          ? Number(actualThicknessB)
+          : actualThicknessB;
+        
+        const requestBody = [
+          { model_code: valueA, thickness: thicknessValueA },
+          { model_code: valueB, thickness: thicknessValueB },
+        ];
+        
+        console.log("Sending request to /vibro/graph:", JSON.stringify(requestBody, null, 2));
+        
         const res = await fetch(`${getApiUrl()}/vibro/graph`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
           },
-          body: JSON.stringify([
-            { model_code: valueA, thickness: actualThicknessA },
-            { model_code: valueB, thickness: actualThicknessB },
-          ]),
+          body: JSON.stringify(requestBody),
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error("Server error response:", errorText);
+          throw new Error(`HTTP ${res.status}: ${errorText}`);
+        }
         
         const text = await res.text();
         if (!text || text.trim() === "") {
@@ -564,7 +605,7 @@ export default function Vibro() {
         setChartData(null);
       }
     })();
-  }, [thicknessA, thicknessB, manualThicknessA, manualThicknessB, valueA, valueB]);
+  }, [thicknessA, thicknessB, manualThicknessA, manualThicknessB, valueA, valueB, thicknessAOptions, thicknessBOptions]);
 
   return (
     <div className="vibro-container">
