@@ -587,8 +587,8 @@ export default function Vibro() {
             Accept: "application/json",
           },
           body: JSON.stringify([
-            { model_code: valueA, size_code: thicknessA },
-            { model_code: valueB, size_code: thicknessB },
+            { model_code: valueA, thickness: thicknessA },
+            { model_code: valueB, thickness: thicknessB },
           ]),
           signal: controller.signal,
         });

@@ -545,8 +545,8 @@ export default function Vibro() {
             Accept: "application/json",
           },
           body: JSON.stringify([
-            { model_code: valueA, size_code: actualThicknessA },
-            { model_code: valueB, size_code: actualThicknessB },
+            { model_code: valueA, thickness: actualThicknessA },
+            { model_code: valueB, thickness: actualThicknessB },
           ]),
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
