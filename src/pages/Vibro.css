@@ -17,6 +17,7 @@
 
 .vibro-title {
   text-align: center;
+  margin: 0;
 }
 
 .vibro-comparison-label {
@@ -78,7 +79,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  margin-top: 8px;
+  /* margin-top: 8px; */
 }
 
 .vibro-manual-input {
