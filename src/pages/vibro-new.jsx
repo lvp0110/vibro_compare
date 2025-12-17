@@ -41,7 +41,7 @@ export default function Vibro() {
   const [infoB, setInfoB] = useState("");
   const [isClicked, setIsClicked] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
-  
+
   // Состояния для ручного ввода толщины
   const [showManualInputA, setShowManualInputA] = useState(false);
   const [showManualInputB, setShowManualInputB] = useState(false);
@@ -62,8 +62,10 @@ export default function Vibro() {
       if (valueA) params.set("valueA", valueA);
       if (valueB) params.set("valueB", valueB);
       // Не копируем "manual" в URL
-      if (thicknessA && thicknessA !== "manual") params.set("thicknessA", thicknessA);
-      if (thicknessB && thicknessB !== "manual") params.set("thicknessB", thicknessB);
+      if (thicknessA && thicknessA !== "manual")
+        params.set("thicknessA", thicknessA);
+      if (thicknessB && thicknessB !== "manual")
+        params.set("thicknessB", thicknessB);
 
       // Build full URL with hash and params
       // Get base URL (everything before the hash)
@@ -135,8 +137,10 @@ export default function Vibro() {
     if (valueA) params.set("valueA", valueA);
     if (valueB) params.set("valueB", valueB);
     // Не сохраняем "manual" в URL, только реальные значения толщины
-    if (thicknessA && thicknessA !== "manual") params.set("thicknessA", thicknessA);
-    if (thicknessB && thicknessB !== "manual") params.set("thicknessB", thicknessB);
+    if (thicknessA && thicknessA !== "manual")
+      params.set("thicknessA", thicknessA);
+    if (thicknessB && thicknessB !== "manual")
+      params.set("thicknessB", thicknessB);
 
     setSearchParams(params, { replace: true });
   }, [
@@ -292,7 +296,7 @@ export default function Vibro() {
       setIsSubmittedA(false);
       return;
     }
-    
+
     setShowManualInputA(false);
     setManualThicknessA("");
     setIsSubmittedA(false);
@@ -337,7 +341,7 @@ export default function Vibro() {
       setIsSubmittedB(false);
       return;
     }
-    
+
     setShowManualInputB(false);
     setManualThicknessB("");
     setIsSubmittedB(false);
@@ -376,7 +380,7 @@ export default function Vibro() {
 
   const handleManualThicknessSubmitA = async () => {
     if (!manualThicknessA.trim()) return;
-    
+
     const thicknessValue = manualThicknessA.trim();
     // Сохраняем "manual" в thicknessA, чтобы пункт оставался выбранным
     setThicknessA("manual");
@@ -410,7 +414,7 @@ export default function Vibro() {
 
   const handleManualThicknessSubmitB = async () => {
     if (!manualThicknessB.trim()) return;
-    
+
     const thicknessValue = manualThicknessB.trim();
     // Сохраняем "manual" в thicknessB, чтобы пункт оставался выбранным
     setThicknessB("manual");
@@ -531,7 +535,9 @@ export default function Vibro() {
     if (thicknessA === "manual") {
       actualThicknessA = manualThicknessA;
     } else if (thicknessA) {
-      const thicknessOption = thicknessAOptions.find((item) => item.code === thicknessA);
+      const thicknessOption = thicknessAOptions.find(
+        (item) => item.code === thicknessA
+      );
       if (!thicknessOption) {
         // Если опция не найдена, не отправляем запрос
         setChartData(null);
@@ -539,12 +545,14 @@ export default function Vibro() {
       }
       actualThicknessA = thicknessOption.thickness;
     }
-    
+
     let actualThicknessB;
     if (thicknessB === "manual") {
       actualThicknessB = manualThicknessB;
     } else if (thicknessB) {
-      const thicknessOption = thicknessBOptions.find((item) => item.code === thicknessB);
+      const thicknessOption = thicknessBOptions.find(
+        (item) => item.code === thicknessB
+      );
       if (!thicknessOption) {
         // Если опция не найдена, не отправляем запрос
         setChartData(null);
@@ -552,7 +560,7 @@ export default function Vibro() {
       }
       actualThicknessB = thicknessOption.thickness;
     }
-    
+
     if (!(actualThicknessA && actualThicknessB)) {
       setChartData(null);
       return;
@@ -562,22 +570,31 @@ export default function Vibro() {
       try {
         // явно скрыть предыдущий график, пока грузится новый
         setChartData(null);
-        
+
         // Преобразуем значения толщины в числа, если они числовые строки
-        const thicknessValueA = actualThicknessA && !isNaN(actualThicknessA) && actualThicknessA !== ""
-          ? Number(actualThicknessA)
-          : actualThicknessA;
-        const thicknessValueB = actualThicknessB && !isNaN(actualThicknessB) && actualThicknessB !== ""
-          ? Number(actualThicknessB)
-          : actualThicknessB;
-        
+        const thicknessValueA =
+          actualThicknessA &&
+          !isNaN(actualThicknessA) &&
+          actualThicknessA !== ""
+            ? Number(actualThicknessA)
+            : actualThicknessA;
+        const thicknessValueB =
+          actualThicknessB &&
+          !isNaN(actualThicknessB) &&
+          actualThicknessB !== ""
+            ? Number(actualThicknessB)
+            : actualThicknessB;
+
         const requestBody = [
           { model_code: valueA, thickness: thicknessValueA },
           { model_code: valueB, thickness: thicknessValueB },
         ];
-        
-        console.log("Sending request to /vibro/graph:", JSON.stringify(requestBody, null, 2));
-        
+
+        console.log(
+          "Sending request to /vibro/graph:",
+          JSON.stringify(requestBody, null, 2)
+        );
+
         const res = await fetch(`${getApiUrl()}/vibro/graph`, {
           method: "POST",
           headers: {
@@ -591,13 +608,13 @@ export default function Vibro() {
           console.error("Server error response:", errorText);
           throw new Error(`HTTP ${res.status}: ${errorText}`);
         }
-        
+
         const text = await res.text();
         if (!text || text.trim() === "") {
           setChartData(null);
           return;
         }
-        
+
         const json = JSON.parse(text);
         setChartData(json.data || null);
       } catch (e) {
@@ -605,7 +622,16 @@ export default function Vibro() {
         setChartData(null);
       }
     })();
-  }, [thicknessA, thicknessB, manualThicknessA, manualThicknessB, valueA, valueB, thicknessAOptions, thicknessBOptions]);
+  }, [
+    thicknessA,
+    thicknessB,
+    manualThicknessA,
+    manualThicknessB,
+    valueA,
+    valueB,
+    thicknessAOptions,
+    thicknessBOptions,
+  ]);
 
   return (
     <div className="vibro-container">
@@ -709,13 +735,17 @@ export default function Vibro() {
                       type="text"
                       value={manualThicknessA}
                       onChange={(e) => {
-                        const value = e.target.value.replace(/[^0-9.]/g, '');
+                        const value = e.target.value.replace(/[^0-9.]/g, "");
                         setManualThicknessA(value);
                         // Сбрасываем флаг отправки при изменении данных
                         setIsSubmittedA(false);
                       }}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !isSubmittedA && manualThicknessA.trim()) {
+                        if (
+                          e.key === "Enter" &&
+                          !isSubmittedA &&
+                          manualThicknessA.trim()
+                        ) {
                           handleManualThicknessSubmitA();
                         }
                       }}
@@ -796,13 +826,17 @@ export default function Vibro() {
                       type="text"
                       value={manualThicknessB}
                       onChange={(e) => {
-                        const value = e.target.value.replace(/[^0-9.]/g, '');
+                        const value = e.target.value.replace(/[^0-9.]/g, "");
                         setManualThicknessB(value);
                         // Сбрасываем флаг отправки при изменении данных
                         setIsSubmittedB(false);
                       }}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !isSubmittedB && manualThicknessB.trim()) {
+                        if (
+                          e.key === "Enter" &&
+                          !isSubmittedB &&
+                          manualThicknessB.trim()
+                        ) {
                           handleManualThicknessSubmitB();
                         }
                       }}
@@ -830,6 +864,13 @@ export default function Vibro() {
           {/* Единый блок: график + таблица */}
           {chartData && (
             <>
+            <hr />
+              {chartData?.conclusion && (
+                <Markdown style={{ marginTop: 8 }}>
+                  {chartData.conclusion}
+                </Markdown>
+              )}
+              <hr />
               <div className="vibro-chart-grid">
                 <div>
                   <VibroChartNew chartData={chartData.measurements} />
@@ -840,12 +881,6 @@ export default function Vibro() {
                   </Markdown>
                 </div>
               </div>
-
-              {chartData?.conclusion && (
-                <Markdown style={{ marginTop: 8 }}>
-                  {chartData.conclusion}
-                </Markdown>
-              )}
 
               <div className="vibro-footer">
                 <p>Примечание:</p>
