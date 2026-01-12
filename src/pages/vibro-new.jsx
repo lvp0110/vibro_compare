@@ -446,6 +446,82 @@ export default function Vibro() {
     }
   };
 
+  // Автоматическая загрузка данных при вводе толщины вручную для A
+  useEffect(() => {
+    if (!showManualInputA || !manualThicknessA.trim() || !valueA) {
+      return;
+    }
+
+    // Debounce: ждем 500ms после последнего изменения
+    const timeoutId = setTimeout(async () => {
+      const thicknessValue = manualThicknessA.trim();
+      
+      try {
+        const res = await fetch(
+          `${getApiUrl()}/vibro/material/model/${valueA}/thickness/${thicknessValue}`
+        );
+
+        if (!res.ok) {
+          setInfoA("");
+          return;
+        }
+
+        const text = await res.text();
+        if (!text || text.trim() === "") {
+          setInfoA("");
+          return;
+        }
+
+        const json = JSON.parse(text);
+        setInfoA(json.data || "");
+        setIsSubmittedA(true);
+      } catch (e) {
+        console.error("Error fetching manual thickness info:", e);
+        setInfoA("");
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [manualThicknessA, showManualInputA, valueA]);
+
+  // Автоматическая загрузка данных при вводе толщины вручную для B
+  useEffect(() => {
+    if (!showManualInputB || !manualThicknessB.trim() || !valueB) {
+      return;
+    }
+
+    // Debounce: ждем 500ms после последнего изменения
+    const timeoutId = setTimeout(async () => {
+      const thicknessValue = manualThicknessB.trim();
+      
+      try {
+        const res = await fetch(
+          `${getApiUrl()}/vibro/material/model/${valueB}/thickness/${thicknessValue}`
+        );
+
+        if (!res.ok) {
+          setInfoB("");
+          return;
+        }
+
+        const text = await res.text();
+        if (!text || text.trim() === "") {
+          setInfoB("");
+          return;
+        }
+
+        const json = JSON.parse(text);
+        setInfoB(json.data || "");
+        setIsSubmittedB(true);
+      } catch (e) {
+        console.error("Error fetching manual thickness info:", e);
+        setInfoB("");
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [manualThicknessB, showManualInputB, valueB]);
+
   // Initialize from URL params
   useEffect(() => {
     if (brands.length === 0 || isInitialized) return;
