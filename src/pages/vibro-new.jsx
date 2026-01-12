@@ -61,11 +61,17 @@ export default function Vibro() {
       if (brandB) params.set("brandB", brandB);
       if (valueA) params.set("valueA", valueA);
       if (valueB) params.set("valueB", valueB);
-      // Не копируем "manual" в URL
-      if (thicknessA && thicknessA !== "manual")
+      // Сохраняем реальные значения толщины: если ручной ввод - сохраняем значение, иначе код
+      if (thicknessA === "manual" && manualThicknessA.trim()) {
+        params.set("thicknessA", manualThicknessA.trim());
+      } else if (thicknessA && thicknessA !== "manual") {
         params.set("thicknessA", thicknessA);
-      if (thicknessB && thicknessB !== "manual")
+      }
+      if (thicknessB === "manual" && manualThicknessB.trim()) {
+        params.set("thicknessB", manualThicknessB.trim());
+      } else if (thicknessB && thicknessB !== "manual") {
         params.set("thicknessB", thicknessB);
+      }
 
       // Build full URL with hash and params
       // Get base URL (everything before the hash)
@@ -91,8 +97,17 @@ export default function Vibro() {
         if (brandB) params.set("brandB", brandB);
         if (valueA) params.set("valueA", valueA);
         if (valueB) params.set("valueB", valueB);
-        if (thicknessA) params.set("thicknessA", thicknessA);
-        if (thicknessB) params.set("thicknessB", thicknessB);
+        // Сохраняем реальные значения толщины: если ручной ввод - сохраняем значение, иначе код
+        if (thicknessA === "manual" && manualThicknessA.trim()) {
+          params.set("thicknessA", manualThicknessA.trim());
+        } else if (thicknessA && thicknessA !== "manual") {
+          params.set("thicknessA", thicknessA);
+        }
+        if (thicknessB === "manual" && manualThicknessB.trim()) {
+          params.set("thicknessB", manualThicknessB.trim());
+        } else if (thicknessB && thicknessB !== "manual") {
+          params.set("thicknessB", thicknessB);
+        }
 
         const baseUrl = window.location.href.split("#")[0];
         const paramsString = params.toString();
@@ -136,11 +151,17 @@ export default function Vibro() {
     if (brandB) params.set("brandB", brandB);
     if (valueA) params.set("valueA", valueA);
     if (valueB) params.set("valueB", valueB);
-    // Не сохраняем "manual" в URL, только реальные значения толщины
-    if (thicknessA && thicknessA !== "manual")
+    // Сохраняем реальные значения толщины: если ручной ввод - сохраняем значение, иначе код
+    if (thicknessA === "manual" && manualThicknessA.trim()) {
+      params.set("thicknessA", manualThicknessA.trim());
+    } else if (thicknessA && thicknessA !== "manual") {
       params.set("thicknessA", thicknessA);
-    if (thicknessB && thicknessB !== "manual")
+    }
+    if (thicknessB === "manual" && manualThicknessB.trim()) {
+      params.set("thicknessB", manualThicknessB.trim());
+    } else if (thicknessB && thicknessB !== "manual") {
       params.set("thicknessB", thicknessB);
+    }
 
     setSearchParams(params, { replace: true });
   }, [
@@ -150,6 +171,8 @@ export default function Vibro() {
     valueB,
     thicknessA,
     thicknessB,
+    manualThicknessA,
+    manualThicknessB,
     isInitialized,
     setSearchParams,
   ]);
@@ -537,6 +560,7 @@ export default function Vibro() {
       try {
         // Load data for A
         if (urlBrandA) {
+          setBrandA(urlBrandA);
           const resA = await fetch(`${getApiUrl()}/vibro/models/${urlBrandA}`, {
             headers: { Accept: "application/json" },
           });
@@ -544,6 +568,7 @@ export default function Vibro() {
           setListA(responseA.data || []);
 
           if (urlValueA) {
+            setValueA(urlValueA);
             const resThicknessA = await fetch(getThicknessUrl(urlValueA), {
               headers: { Accept: "application/json" },
             });
@@ -551,15 +576,35 @@ export default function Vibro() {
             setThicknessAOptions(jsonThicknessA.data || []);
 
             if (urlThicknessA) {
-              const thickness = jsonThicknessA.data?.find(
+              // Проверяем, является ли значение кодом из списка
+              const thicknessOption = jsonThicknessA.data?.find(
                 (item) => item.code === urlThicknessA
-              )?.thickness;
-              if (thickness) {
+              );
+              
+              if (thicknessOption) {
+                // Это код из списка
+                setThicknessA(urlThicknessA);
                 const resInfoA = await fetch(
-                  `${getApiUrl()}/vibro/material/model/${urlValueA}/thickness/${thickness}`
+                  `${getApiUrl()}/vibro/material/model/${urlValueA}/thickness/${thicknessOption.thickness}`
                 );
                 const jsonInfoA = await resInfoA.json();
                 setInfoA(jsonInfoA.data || "");
+              } else {
+                // Это ручной ввод
+                setThicknessA("manual");
+                setShowManualInputA(true);
+                setManualThicknessA(urlThicknessA);
+                setIsSubmittedA(true);
+                const resInfoA = await fetch(
+                  `${getApiUrl()}/vibro/material/model/${urlValueA}/thickness/${urlThicknessA}`
+                );
+                if (resInfoA.ok) {
+                  const text = await resInfoA.text();
+                  if (text && text.trim() !== "") {
+                    const jsonInfoA = JSON.parse(text);
+                    setInfoA(jsonInfoA.data || "");
+                  }
+                }
               }
             }
           }
@@ -567,6 +612,7 @@ export default function Vibro() {
 
         // Load data for B
         if (urlBrandB) {
+          setBrandB(urlBrandB);
           const resB = await fetch(`${getApiUrl()}/vibro/models/${urlBrandB}`, {
             headers: { Accept: "application/json" },
           });
@@ -574,6 +620,7 @@ export default function Vibro() {
           setListB(responseB.data || []);
 
           if (urlValueB) {
+            setValueB(urlValueB);
             const resThicknessB = await fetch(getThicknessUrl(urlValueB), {
               headers: { Accept: "application/json" },
             });
@@ -581,15 +628,35 @@ export default function Vibro() {
             setThicknessBOptions(jsonThicknessB.data || []);
 
             if (urlThicknessB) {
-              const thickness = jsonThicknessB.data?.find(
+              // Проверяем, является ли значение кодом из списка
+              const thicknessOption = jsonThicknessB.data?.find(
                 (item) => item.code === urlThicknessB
-              )?.thickness;
-              if (thickness) {
+              );
+              
+              if (thicknessOption) {
+                // Это код из списка
+                setThicknessB(urlThicknessB);
                 const resInfoB = await fetch(
-                  `${getApiUrl()}/vibro/material/model/${urlValueB}/thickness/${thickness}`
+                  `${getApiUrl()}/vibro/material/model/${urlValueB}/thickness/${thicknessOption.thickness}`
                 );
                 const jsonInfoB = await resInfoB.json();
                 setInfoB(jsonInfoB.data || "");
+              } else {
+                // Это ручной ввод
+                setThicknessB("manual");
+                setShowManualInputB(true);
+                setManualThicknessB(urlThicknessB);
+                setIsSubmittedB(true);
+                const resInfoB = await fetch(
+                  `${getApiUrl()}/vibro/material/model/${urlValueB}/thickness/${urlThicknessB}`
+                );
+                if (resInfoB.ok) {
+                  const text = await resInfoB.text();
+                  if (text && text.trim() !== "") {
+                    const jsonInfoB = JSON.parse(text);
+                    setInfoB(jsonInfoB.data || "");
+                  }
+                }
               }
             }
           }
