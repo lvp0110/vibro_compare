@@ -148,14 +148,47 @@
 .vibro-chart-info {
   font-size: 14px;
   display: grid;
-  margin-right: 40px;
+  width: 100%;
+  max-width: 100%;
 }
 .vibro-chart-info table {
   background-color: #EBEBEB;
+  width: 100% !important;
+  max-width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+  display: table;
 }
 .vibro-chart-info td {
   border: solid 1px #94a3b8;
-  padding: 3px;
+  padding: 5px;
+  word-break: break-word;
+}
+.vibro-chart-info th {
+  border: solid 1px #94a3b8;
+  padding: 5px;
+  background-color: #d4d4d4;
+  word-break: break-word;
+}
+
+/* Стили для всех таблиц в markdown контенте */
+.vibro-container table {
+  width: 100% !important;
+  max-width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+  background-color: #EBEBEB;
+}
+
+.vibro-container table td,
+.vibro-container table th {
+  border: solid 1px #94a3b8;
+  padding: 5px;
+  word-break: break-word;
+}
+
+.vibro-container table th {
+  background-color: #d4d4d4;
 }
 .vibro-footer {
   border: solid 1px #a8aaae;
@@ -198,6 +231,302 @@
     margin-top: 10px;
   }
   .vibro-chart-info {
-    margin-right: 0px;
+    margin-right: 0;
+    margin-left: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+  .vibro-chart-info table {
+    width: 100% !important;
+    max-width: 100%;
+  }
+}
+
+/* Mobile Breakpoint - экраны меньше 768px */
+@media screen and (max-width: 768px) {
+  .vibro-container {
+    margin: 5px auto;
+    padding: 0 10px;
+  }
+
+  .vibro-title {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+  }
+
+  .vibro-comparison-label {
+    font-size: 0.9em;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    word-break: break-word;
+  }
+
+  .vibro-brand-material-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .vibro-brand-material-grid > div {
+    margin-bottom: 15px;
+  }
+
+  .vibro-select {
+    font-size: 16px; /* Предотвращает зум на iOS */
+    padding: 10px;
+    height: 44px; /* Увеличиваем для лучшего тач-интерфейса */
+    margin-top: 10px;
+  }
+
+  .vibro-material-thickness-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .vibro-manual-input-wrapper {
+    margin-top: 10px;
+  }
+
+  .vibro-manual-input {
+    font-size: 16px; /* Предотвращает зум на iOS */
+    padding: 10px 40px 10px 10px;
+    height: 44px;
+  }
+
+  .vibro-info {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+
+  .vibro-info * {
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  .vibro-info table {
+    width: 100%;
+    font-size: 0.85em;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .vibro-chart-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .vibro-chart-info {
+    margin-right: 0;
+    margin-left: 0;
+    margin-top: 15px;
+    font-size: 0.9em;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .vibro-chart-info table {
+    width: 100% !important;
+    max-width: 100%;
+    font-size: 0.85em;
+    display: table;
+    table-layout: auto;
+    border-collapse: collapse;
+  }
+
+  .vibro-chart-info table td,
+  .vibro-chart-info table th {
+    padding: 5px;
+    word-break: break-word;
+  }
+
+  .vibro-footer {
+    flex-direction: column;
+    text-align: start;
+    gap: 15px;
+    padding: 15px;
+    margin-top: 20px;
+    font-size: 0.9em;
+  }
+
+  .vibro-footer ul {
+    padding-left: 20px;
+    margin: 10px 0;
+  }
+
+  .vibro-footer li {
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+
+  .vibro-footer small {
+    font-size: 0.85em;
+  }
+
+  /* Кнопка копирования ссылки */
+  .vibro-container > div:first-child {
+    margin-bottom: 15px;
+    text-align: center;
+  }
+
+  /* Улучшаем отступы для hr */
+  hr {
+    margin: 20px 0;
+  }
+
+  /* Markdown контент */
+  .vibro-container markdown,
+  .vibro-container [class*="markdown"] {
+    font-size: 0.9em;
+    line-height: 1.6;
+  }
+
+  /* График на мобильных устройствах */
+  .vibro-chart-grid > div:first-child {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-left: 0;
+  }
+
+  .vibro-chart-wrapper {
+    width: 100% !important;
+    margin-left: 0 !important;
+    height: 500px !important; /* Увеличиваем высоту для размещения всех подписей */
+    min-height: 500px !important;
+    overflow: visible !important;
+  }
+
+  .vibro-chart-wrapper .recharts-wrapper {
+    overflow: visible !important;
+  }
+
+  .vibro-chart-wrapper .recharts-responsive-container {
+    overflow: visible !important;
+  }
+
+  .vibro-chart-grid > div:first-child > div {
+    min-width: 100%;
+  }
+
+  /* Улучшаем отображение легенды и осей на мобильных */
+  .vibro-chart-grid .recharts-legend-wrapper {
+    font-size: 0.85em;
+    padding: 5px 0;
+  }
+
+  .vibro-chart-grid .recharts-cartesian-axis-tick {
+    font-size: 10px;
+  }
+
+  /* Улучшаем отступы для графика на мобильных */
+  .vibro-chart-grid .recharts-wrapper {
+    margin-left: 0 !important;
+  }
+
+  .vibro-chart-grid .recharts-surface {
+    overflow: visible;
+  }
+}
+
+/* Стили для предотвращения наложения подписей на оси X */
+.vibro-chart-wrapper .recharts-xAxis {
+  overflow: visible !important;
+}
+
+.vibro-chart-wrapper .recharts-cartesian-axis-tick {
+  white-space: nowrap;
+  overflow: visible !important;
+  display: block !important;
+  visibility: visible !important;
+}
+
+.vibro-chart-wrapper .recharts-layer {
+  overflow: visible !important;
+}
+
+.vibro-chart-wrapper .recharts-cartesian-axis {
+  overflow: visible !important;
+}
+
+/* Улучшаем отображение всех подписей на оси X */
+.vibro-chart-wrapper .recharts-xAxis .recharts-cartesian-axis-tick-value {
+  overflow: visible !important;
+  text-overflow: clip;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Убеждаемся, что все тики отображаются */
+.vibro-chart-wrapper .recharts-cartesian-axis-ticks {
+  overflow: visible !important;
+}
+
+.vibro-chart-wrapper .recharts-cartesian-axis-tick {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* На мобильных устройствах - дополнительные стили для оси X */
+@media screen and (max-width: 768px) {
+  .vibro-chart-wrapper .recharts-xAxis {
+    height: 120px !important;
+    min-height: 120px !important;
+    overflow: visible !important;
+  }
+
+  .vibro-chart-wrapper .recharts-xAxis .recharts-cartesian-axis-tick {
+    font-size: 7px !important;
+    transform-origin: top left;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  .vibro-chart-wrapper .recharts-xAxis .recharts-cartesian-axis-tick-value {
+    overflow: visible !important;
+    white-space: nowrap;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  .vibro-chart-wrapper .recharts-cartesian-axis-ticks {
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  .vibro-chart-wrapper .recharts-cartesian-axis-ticks .recharts-cartesian-axis-tick {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Убеждаемся, что контейнер оси X имеет достаточно места */
+  .vibro-chart-wrapper .recharts-cartesian-axis {
+    min-height: 120px !important;
+    overflow: visible !important;
+  }
+}
+
+/* Для всех разрешений - убеждаемся, что все тики видны */
+@media screen and (min-width: 769px) {
+  .vibro-chart-wrapper .recharts-xAxis .recharts-cartesian-axis-tick {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .vibro-chart-wrapper .recharts-cartesian-axis-ticks {
+    overflow: visible !important;
   }
 }

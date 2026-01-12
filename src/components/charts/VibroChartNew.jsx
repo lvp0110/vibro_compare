@@ -9,7 +9,7 @@ import {
   Legend,
   ReferenceLine,
 } from "recharts";
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
 
 export default function VibroChartNew({
   chartData,
@@ -21,6 +21,17 @@ export default function VibroChartNew({
     areaNegative: "rgba(255, 0, 0, 0.7)", //rgba(255, 0, 0, 0.7) под осью
   },
 }) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   useEffect(() => {
     // console.log("📊 chartData =", chartData);
   }, [chartData]);
@@ -46,12 +57,44 @@ export default function VibroChartNew({
     });
   }, [chartData]);
 
+  // Определяем настройки для оси X в зависимости от размера экрана
+  const xAxisConfig = useMemo(() => {
+    if (isMobile) {
+      return {
+        margin: { top: 10, right: 10, bottom: 120, left: -10 },
+        tick: { 
+          fontSize: 7, 
+          angle: -45, 
+          textAnchor: 'end',
+          dy: 15,
+          dx: -2
+        },
+        interval: 0, // Показываем все подписи
+        height: 120,
+        minTickGap: 0
+      };
+    }
+    return {
+      margin: { top: 10, right: 20, bottom: 70, left: 0 },
+      tick: { 
+        fontSize: 10,
+        dy: 8
+      },
+      interval: 0, // Показываем все подписи
+      height: 70,
+      minTickGap: 0
+    };
+  }, [isMobile]);
+
+  // Определяем высоту графика в зависимости от размера экрана
+  const chartHeight = isMobile ? 500 : Math.max(height, 450);
+
   return (
-    <div style={{ width: "100%", marginLeft: "-10px", height }}>
+    <div className="vibro-chart-wrapper" style={{ width: "100%", marginLeft: "-10px", height: chartHeight }}>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={data}
-          margin={{ top: 10, right: 20, bottom: 10, left: 0 }}
+          margin={xAxisConfig.margin}
         >
           <CartesianGrid strokeDasharray="3 3" />
 
@@ -65,7 +108,10 @@ export default function VibroChartNew({
             ticks={chartData.diagram_params.x_axis_display.map((f) =>
               Math.log10(f)
             )} // ← готовые ISO-точки
-            interval={0}
+            interval={0} // Всегда показываем все подписи
+            minTickGap={xAxisConfig.minTickGap} // Минимальный интервал между подписями = 0
+            allowDuplicatedCategory={true} // Разрешаем дубликаты
+            tickCount={chartData.diagram_params.x_axis_display.length} // Явно указываем количество подписей
             tickFormatter={(value) =>
               `${
                 Math.pow(10, value) < 10
@@ -73,7 +119,9 @@ export default function VibroChartNew({
                   : Math.round(Math.pow(10, value))
               } Hz`
             }
-            tick={{ fontSize: 12 }}
+            tick={xAxisConfig.tick}
+            height={xAxisConfig.height}
+            allowDataOverflow={false} // Не разрешаем переполнение данных
           />
 
           <YAxis
