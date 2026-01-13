@@ -171,6 +171,12 @@
   word-break: break-word;
 }
 
+/* Уменьшаем отступы сверху и снизу у легенды графика */
+.vibro-chart-grid .recharts-legend-wrapper {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
 /* Стили для всех таблиц в markdown контенте */
 .vibro-container table {
   width: 100% !important;
@@ -417,11 +423,12 @@
   /* Улучшаем отображение легенды и осей на мобильных */
   .vibro-chart-grid .recharts-legend-wrapper {
     font-size: 0.85em;
-    padding: 5px 0;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   .vibro-chart-grid .recharts-cartesian-axis-tick {
-    font-size: 10px;
+    font-size: 14px;
   }
 
   /* Улучшаем отступы для графика на мобильных */
@@ -444,6 +451,7 @@
   overflow: visible !important;
   display: block !important;
   visibility: visible !important;
+  font-size: 14px !important;
 }
 
 .vibro-chart-wrapper .recharts-layer {
@@ -461,6 +469,7 @@
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
+  font-size: 14px !important;
 }
 
 /* Убеждаемся, что все тики отображаются */
@@ -483,7 +492,7 @@
   }
 
   .vibro-chart-wrapper .recharts-xAxis .recharts-cartesian-axis-tick {
-    font-size: 7px !important;
+    font-size: 10px !important;
     transform-origin: top left;
     display: block !important;
     visibility: visible !important;
@@ -498,6 +507,7 @@
     visibility: visible !important;
     opacity: 1 !important;
     pointer-events: auto !important;
+    font-size: 10px !important;
   }
 
   .vibro-chart-wrapper .recharts-cartesian-axis-ticks {

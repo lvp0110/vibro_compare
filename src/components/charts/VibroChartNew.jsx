@@ -63,7 +63,7 @@ export default function VibroChartNew({
       return {
         margin: { top: 10, right: 10, bottom: 120, left: -10 },
         tick: { 
-          fontSize: 7, 
+          fontSize: 10, 
           angle: -45, 
           textAnchor: 'end',
           dy: 15,
@@ -77,7 +77,7 @@ export default function VibroChartNew({
     return {
       margin: { top: 10, right: 20, bottom: 70, left: 0 },
       tick: { 
-        fontSize: 10,
+        fontSize: 14,
         dy: 8
       },
       interval: 0, // Показываем все подписи
@@ -133,7 +133,12 @@ export default function VibroChartNew({
             tick={{ fontSize: 12 }}
           />
 
-          <Legend />
+          <Legend 
+            wrapperStyle={{
+              padding: 0,
+              margin: 0
+            }}
+          />
 
           <ReferenceLine y={0} stroke="black" strokeWidth={1.5} />
 
