@@ -12,5 +12,10 @@ export const getEnv = (key) => {
 
 // Helper function to get the API URL
 export const getApiUrl = () => {
-  return getEnv("VITE_API_URL");
+  const apiUrl = getEnv("VITE_API_URL");
+  // Fallback to default API URL if not set
+  // Remove trailing slash to avoid double slashes in URLs
+  const defaultUrl = "https://dev3.constrtodo.ru:3005";
+  const url = apiUrl || defaultUrl;
+  return url.endsWith("/") ? url.slice(0, -1) : url;
 };

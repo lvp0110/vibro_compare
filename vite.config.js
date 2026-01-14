@@ -12,7 +12,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://51.250.123.41:3005',//https://dev3.constrtodo.ru:3005/ || http://51.250.123.41:3005
+        target: 'https://dev3.constrtodo.ru:3005',//https://dev3.constrtodo.ru:3005/ || http://51.250.123.41:3005
         changeOrigin: true,
         secure: false,
       },
