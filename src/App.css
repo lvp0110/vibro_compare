@@ -8,8 +8,8 @@
   padding-inline: 16px;
 
   /* Фон */
-  /* background-image: url("https://constrtodo.ru:3005/api/v1/constr/black_back_ground.webp"); */
-  /* background-image: url("https://constrtodo.ru:3005/api/v1/constr/back_ground.jpg"); */
+  /* background-image: url("https://dev3.constrtodo.ru:3005/api/v1/constr/black_back_ground.webp"); */
+  /* background-image: url("https://dev3.constrtodo.ru:3005/api/v1/constr/back_ground.jpg"); */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
