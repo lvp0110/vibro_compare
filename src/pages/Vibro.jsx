@@ -47,6 +47,11 @@ export default function Vibro() {
   const [infoB, setInfoB] = useState("");
   const [isClicked, setIsClicked] = useState(false);
 
+  // Аналоги (только для левой секции A)
+  const [showAnalogTableA, setShowAnalogTableA] = useState(false);
+  const [analogDataA, setAnalogDataA] = useState([]);
+  const [loadingAnalogA, setLoadingAnalogA] = useState(false);
+
   const ICON_URL = `${getApiUrl()}/api/v1/constr/share_icon_grey.svg`;
 
   // Copy URL to clipboard
@@ -612,6 +617,33 @@ export default function Vibro() {
     return () => controller.abort();
   }, [valueA, valueB, thicknessA, thicknessB, thicknessAOptions, thicknessBOptions]);
 
+  const handleAnalogButtonA = async () => {
+    if (showAnalogTableA) {
+      setShowAnalogTableA(false);
+      return;
+    }
+
+    if (!(brandA && valueA && thicknessA)) return;
+
+    setLoadingAnalogA(true);
+    setShowAnalogTableA(true);
+
+    try {
+      // TODO: заменить на реальный API endpoint для получения аналогов
+      // Пока — временная заглушка
+      setAnalogDataA([
+        { brand: "Бренд 1", model: "Модель 1", thickness: "10 мм" },
+        { brand: "Бренд 2", model: "Модель 2", thickness: "12 мм" },
+        { brand: "Бренд 3", model: "Модель 3", thickness: "15 мм" },
+      ]);
+    } catch (e) {
+      console.error("Error loading analogs:", e);
+      setAnalogDataA([]);
+    } finally {
+      setLoadingAnalogA(false);
+    }
+  };
+
   const ignoredKeys = useMemo(() => new Set(["__typename"]), []);
   const isObject = (v) => v !== null && typeof v === "object";
   const areValuesEqual = (a, b) => {
@@ -745,6 +777,42 @@ export default function Vibro() {
                   </select>
                 </label>
               </div>
+
+              {/* Кнопка появляется только после заполнения всех полей слева */}
+              {brandA && valueA && thicknessA && (
+                <button className="vibro-analog-button" onClick={handleAnalogButtonA}>
+                  подбор аналога
+                </button>
+              )}
+
+              {showAnalogTableA && (
+                <div className="vibro-analog-table-wrapper">
+                  {loadingAnalogA ? (
+                    <div className="vibro-analog-loading">Загрузка...</div>
+                  ) : analogDataA.length > 0 ? (
+                    <table className="vibro-analog-table">
+                      <thead>
+                        <tr>
+                          <th>Бренд</th>
+                          <th>Модель</th>
+                          <th>Толщина</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {analogDataA.map((item, index) => (
+                          <tr key={index}>
+                            <td>{item.brand}</td>
+                            <td>{item.model}</td>
+                            <td>{item.thickness}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="vibro-analog-empty">Аналоги не найдены</div>
+                  )}
+                </div>
+              )}
 
               {/* Информация по A прямо под селектами A */}
               <div className="vibro-info">

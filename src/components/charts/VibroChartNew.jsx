@@ -28,8 +28,8 @@ export default function VibroChartNew({
       setIsMobile(window.innerWidth < 768);
     };
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   useEffect(() => {
@@ -62,27 +62,27 @@ export default function VibroChartNew({
     if (isMobile) {
       return {
         margin: { top: 10, right: 10, bottom: 120, left: -10 },
-        tick: { 
-          fontSize: 10, 
-          angle: -45, 
-          textAnchor: 'end',
+        tick: {
+          fontSize: 10,
+          angle: -45,
+          textAnchor: "end",
           dy: 15,
-          dx: -2
+          dx: -2,
         },
         interval: 0, // Показываем все подписи
         height: 120,
-        minTickGap: 0
+        minTickGap: 0,
       };
     }
     return {
       margin: { top: 10, right: 20, bottom: 70, left: 0 },
-      tick: { 
+      tick: {
         fontSize: 14,
-        dy: 8
+        dy: 8,
       },
       interval: 0, // Показываем все подписи
       height: 70,
-      minTickGap: 0
+      minTickGap: 0,
     };
   }, [isMobile]);
 
@@ -90,12 +90,12 @@ export default function VibroChartNew({
   const chartHeight = isMobile ? 500 : Math.max(height, 450);
 
   return (
-    <div className="vibro-chart-wrapper" style={{ width: "100%", marginLeft: "-10px", height: chartHeight }}>
+    <div
+      className="vibro-chart-wrapper"
+      style={{ width: "100%", marginLeft: "-10px", height: chartHeight }}
+    >
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart
-          data={data}
-          margin={xAxisConfig.margin}
-        >
+        <AreaChart data={data} margin={xAxisConfig.margin}>
           <CartesianGrid strokeDasharray="3 3" />
 
           <XAxis
@@ -113,11 +113,7 @@ export default function VibroChartNew({
             allowDuplicatedCategory={true} // Разрешаем дубликаты
             tickCount={chartData.diagram_params.x_axis_display.length} // Явно указываем количество подписей
             tickFormatter={(value) =>
-              `${
-                Math.pow(10, value) < 10
-                  ? Math.pow(10, value).toFixed(1)
-                  : Math.round(Math.pow(10, value))
-              } Hz`
+              `${Number(Math.pow(10, value).toFixed(1))}`
             }
             tick={xAxisConfig.tick}
             height={xAxisConfig.height}
@@ -133,10 +129,10 @@ export default function VibroChartNew({
             tick={{ fontSize: 12 }}
           />
 
-          <Legend 
+          <Legend
             wrapperStyle={{
               padding: 0,
-              margin: 0
+              margin: 0,
             }}
           />
 
