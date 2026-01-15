@@ -779,13 +779,13 @@ export default function Vibro() {
               </div>
 
               {/* Кнопка появляется только после заполнения всех полей слева */}
-              {brandA && valueA && thicknessA && (
+              {/* {brandA && valueA && thicknessA && (
                 <button className="vibro-analog-button" onClick={handleAnalogButtonA}>
                   подбор аналога
                 </button>
-              )}
+              )} */}
 
-              {showAnalogTableA && (
+              {/* {showAnalogTableA && (
                 <div className="vibro-analog-table-wrapper">
                   {loadingAnalogA ? (
                     <div className="vibro-analog-loading">Загрузка...</div>
@@ -812,7 +812,7 @@ export default function Vibro() {
                     <div className="vibro-analog-empty">Аналоги не найдены</div>
                   )}
                 </div>
-              )}
+              )} */}
 
               {/* Информация по A прямо под селектами A */}
               <div className="vibro-info">

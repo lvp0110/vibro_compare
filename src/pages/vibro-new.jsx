@@ -911,7 +911,7 @@ export default function Vibro() {
 
       {!loading && !error && (
         <>
-          <div style={{ position: "relative", display: "inline-block" }}>
+          {/* <div style={{ position: "relative", display: "inline-block" }}>
             <img
               role="button"
               src={ICON_URL}
@@ -945,7 +945,7 @@ export default function Vibro() {
             <strong>
               {labelAFull || "-"} VS {labelBFull || "-"}
             </strong>
-          </div>
+          </div> */}
 
           {/* Бренд + (Материал и Толщина под ним) + Инфо для A и B */}
           <div className="vibro-brand-material-grid">
@@ -1035,7 +1035,7 @@ export default function Vibro() {
               </div>
 
               {/* Select "подбор аналога" появляется только после заполнения всех полей слева */}
-              {shouldShowAnalogSelect && (
+              {/* {shouldShowAnalogSelect && (
                 <label>
                   <select
                     className="vibro-select"
@@ -1055,7 +1055,7 @@ export default function Vibro() {
                       ))}
                   </select>
                 </label>
-              )}
+              )} */}
 
               {/* Информация по A прямо под селектами A */}
               <div className="vibro-info">
