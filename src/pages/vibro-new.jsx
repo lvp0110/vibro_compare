@@ -242,60 +242,54 @@ export default function Vibro() {
     ((thicknessA && thicknessA !== "manual") ||
       (thicknessA === "manual" && isSubmittedA && manualThicknessA.trim()));
 
-  // Загружаем все комбинации бренд/модель/толщина один раз, когда select становится доступным
+  // Текущая толщина слева (для запроса аналогов)
+  const effectiveThicknessA =
+    thicknessA === "manual"
+      ? manualThicknessA.trim()
+      : thicknessAOptions.find((o) => o.code === thicknessA)?.thickness ?? "";
+
+  // Загружаем аналогов по API: GET /vibro/analogies/model/{model}/thickness/{thickness}
   useEffect(() => {
-    if (!shouldShowAnalogSelect) return;
-    if (analogOptionsLoadedRef.current) return;
-    if (!brands?.length) return;
+    if (!shouldShowAnalogSelect || !valueA || !effectiveThicknessA) {
+      setAnalogOptions([]);
+      return;
+    }
 
     const controller = new AbortController();
     (async () => {
       try {
         setLoadingAnalogOptions(true);
+        analogOptionsLoadedRef.current = false;
 
-        const all = [];
+        const res = await fetch(
+          `${getApiUrl()}/vibro/analogies/model/${encodeURIComponent(valueA)}/thickness/${encodeURIComponent(effectiveThicknessA)}`,
+          { headers: { Accept: "application/json" }, signal: controller.signal }
+        );
 
-        for (const brand of brands) {
-          // models for brand
-          const resModels = await fetch(
-            `${getApiUrl()}/vibro/models/${encodeURIComponent(brand.Code)}`,
-            { headers: { Accept: "application/json" }, signal: controller.signal }
-          );
-          if (!resModels.ok) continue;
-          const jsonModels = await resModels.json();
-          const models = jsonModels?.data || [];
-
-          for (const model of models) {
-            const resSizes = await fetch(getThicknessUrl(model.Code), {
-              headers: { Accept: "application/json" },
-              signal: controller.signal,
-            });
-            if (!resSizes.ok) continue;
-            const jsonSizes = await resSizes.json();
-            const sizes = jsonSizes?.data || [];
-
-            for (const s of sizes) {
-              const thicknessValue = s?.thickness ?? s?.Thickness ?? "";
-              if (!thicknessValue) continue;
-              all.push({
-                value: `${brand.Code}::${model.Code}::${String(thicknessValue)}`,
-                label: `${brand.Name} — ${model.Name} — ${thicknessValue}`,
-              });
-            }
-          }
+        if (!res.ok) {
+          setAnalogOptions([]);
+          return;
         }
+
+        const json = await res.json();
+        const list = Array.isArray(json) ? json : json?.data ?? [];
+        const all = list.map((item) => ({
+          value: `${item.brand_code ?? ""}::${item.model_code ?? ""}::${String(item.thickness ?? "")}`,
+          label: item.name ?? [item.brand_code, item.model_code, item.thickness].filter(Boolean).join(" — "),
+        }));
 
         setAnalogOptions(all);
         analogOptionsLoadedRef.current = true;
       } catch (e) {
         if (e?.name !== "AbortError") console.error(e);
+        setAnalogOptions([]);
       } finally {
         setLoadingAnalogOptions(false);
       }
     })();
 
     return () => controller.abort();
-  }, [shouldShowAnalogSelect, brands, isSubmittedA, manualThicknessA, thicknessA, brandA, valueA]);
+  }, [shouldShowAnalogSelect, valueA, effectiveThicknessA]);
 
   const brandAName = brands.find((b) => b.Code === brandA)?.Name || "";
   const brandBName = brands.find((b) => b.Code === brandB)?.Name || "";
@@ -476,8 +470,22 @@ export default function Vibro() {
           }
         }
       } else {
-        // если не нашли код, оставляем пустым (пользователь выберет вручную)
-        setThicknessB("");
+        // толщины нет в списке размеров — подставляем в поле «Толщина материала» через ручной ввод
+        setShowManualInputB(true);
+        setThicknessB("manual");
+        setManualThicknessB(String(thicknessValue));
+        setIsSubmittedB(true);
+
+        const resInfo = await fetch(
+          `${getApiUrl()}/vibro/material/model/${modelCode}/thickness/${thicknessValue}`
+        );
+        if (resInfo.ok) {
+          const text = await resInfo.text();
+          if (text && text.trim()) {
+            const infoJson = JSON.parse(text);
+            setInfoB(infoJson.data || "");
+          }
+        }
       }
     } catch (err) {
       console.error("Error applying analog selection:", err);
@@ -916,8 +924,8 @@ export default function Vibro() {
               role="button"
               src={ICON_URL}
               alt="Копировать ссылку"
-              width={40}
-              height={40}
+              width={38}
+              height={38}
               onClick={handleCopyUrl}
               style={{
                 cursor: "pointer",
@@ -1036,25 +1044,27 @@ export default function Vibro() {
 
               {/* Select "подбор аналога" появляется только после заполнения всех полей слева */}
               {shouldShowAnalogSelect && (
-                <label>
-                  <select
-                    className="vibro-select"
-                    defaultValue=""
-                    onChange={handleAnalogSelectChange}
-                  >
-                    <option value="" disabled>
-                      {loadingAnalogOptions
-                        ? "Загрузка аналогов..."
-                        : "Подбор аналога..."}
-                    </option>
-                    {!loadingAnalogOptions &&
-                      analogOptions.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                  </select>
-                </label>
+                <div className="vibro-material-thickness-grid">
+                  <label>
+                    <select
+                      className="vibro-select"
+                      defaultValue=""
+                      onChange={handleAnalogSelectChange}
+                    >
+                      <option value="" disabled>
+                        {loadingAnalogOptions
+                          ? "Загрузка аналогов..."
+                          : "Подбор аналога..."}
+                      </option>
+                      {!loadingAnalogOptions &&
+                        analogOptions.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                    </select>
+                  </label>
+                </div>
               )}
 
               {/* Информация по A прямо под селектами A */}
