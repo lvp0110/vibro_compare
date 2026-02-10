@@ -2,21 +2,32 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color-scheme: light dark;
+  /* color-scheme: light dark; */
   color: rgba(255, 255, 255, 0.87);
-  margin: 0px 70px;
+  margin: 0px 0px;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-html, body { height: 100%; }
+html,
+body {
+  height: 100%;
+}
 
 body {
   margin: 0;
   height: 100vh;
-  background-color: #242424;
+  /* background-color: #2b2b2b; */
+}
+
+a,
+html,
+body,
+#root {
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
 a {
@@ -32,3 +43,24 @@ h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
+
+@media screen and (max-width: 500px) {
+  :root {
+    margin: 0px 6px;
+  }
+}
+
+.recharts-legend-item-text {
+  font-size: large;
+  font-weight: 400;
+}
+
+table {
+  background-color: #EBEBEB;
+  font-weight: 700;
+  padding: 4px;
+  @media (width<500px){
+    padding: 0;
+  }
+}
+

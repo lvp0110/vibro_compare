@@ -5,17 +5,22 @@
   "type": "module",
   "homepage": "https://lvp0110.github.io/vibro_compare/",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:local": "vite --mode developmentLocal",
+    "dev": "vite --mode development",
+    "build": "vite build --mode stage"
   },
   "dependencies": {
+    "apexcharts": "^5.3.5",
+    "express": "^4.21.2",
     "react": "^19.1.1",
+    "react-apexcharts": "^1.7.0",
     "react-dom": "^19.1.1",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.8.0",
-    "recharts": "^3.2.1"
+    "recharts": "^3.2.1",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

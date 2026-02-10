@@ -1,63 +1,29 @@
 import { Outlet, NavLink } from "react-router-dom";
+import "./App.css";
 
 export default function App() {
-  const active = ({ isActive }) =>
-    isActive ? { fontWeight: "700" } : undefined;
 
   return (
-    <div
-      style={{
-        margin: "0px auto",
-        fontFamily: "sans-serif",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        paddingInline: 16,
-      }}
-    >
-      <header
-        style={{
-          display: "flex",
-          gap: 16,
-          padding: "16px 0",
-          position: "sticky",
-          top: 0,
-          zIndex: 10,
-          borderBottom: "1px solid #eee",
-        }}
-      >
-        {/* <NavLink to="/" style={active}>
-          Material
-        </NavLink> */}
-        <NavLink to="/vibro" style={active}>
-          Compare
+    <div className="app">
+      {/* <header className="app__header">
+        <NavLink
+          to="/vibro"
+          className={({ isActive }) =>
+            isActive ? "nav-link nav-link--active" : "nav-link"
+          }
+        >
+          <small className="badge">VC</small> сравнение виброизоляционных
+          материалов
         </NavLink>
-        {/* <a href="https://db.acoustic.ru" target="_blank" rel="noreferrer">Docs</a> */}
-      </header>
+      </header> */}
 
-      <main
-        style={{
-          flex: 1,
-          display: "flex",
-          alignItems: "",
-          justifyContent: "center",
-          padding: "24px 0",
-        }}
-      >
+      <main className="app__main">
         <Outlet />
       </main>
 
-      <footer
-        style={{
-          marginTop: "auto",
-          opacity: 0.7,
-          padding: "12px 0",
-          borderTop: "1px solid #eee",
-        }}
-      >
+      <footer className="app__footer">
         <small>dBase© VibroCompare | </small>
         <small>
-          
           {new Date()
             .toLocaleDateString("ru-RU", {
               day: "2-digit",
