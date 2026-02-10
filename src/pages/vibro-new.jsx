@@ -924,8 +924,8 @@ export default function Vibro() {
               role="button"
               src={ICON_URL}
               alt="Копировать ссылку"
-              width={38}
-              height={38}
+              width={36}
+              height={36}
               onClick={handleCopyUrl}
               style={{
                 cursor: "pointer",
