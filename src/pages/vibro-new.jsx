@@ -56,7 +56,8 @@ export default function Vibro() {
   const analogOptionsLoadedRef = useRef(false);
 
 
-  const ICON_URL = `${getApiUrl()}/api/v1/constr/share_icon_grey.svg`;
+  // const ICON_URL = `${getApiUrl()}/api/v1/constr/share_icon_grey.svg`; 
+  const ICON_URL = `${getApiUrl()}/api/v2/public/image/share_icon_grey.svg`; 
 
   // Copy URL to clipboard
   const handleCopyUrl = async () => {
